@@ -1,0 +1,11 @@
+.btmBar {
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+}
+
+@media (min-width: 700px) {
+    .btmBar {
+        visibility: hidden;
+    }
+}

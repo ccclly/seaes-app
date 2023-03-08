@@ -1,5 +1,12 @@
-import '@/styles/globals.css'
+import '@/styles/globals.css';
 
-export default function App({ Component, pageProps }) {
-  return <Component {...pageProps} />
+import Navbar from '@/components/Navbar';
+import TopBar from '@/components/TopBar';
+
+export default function App ({ Component, pageProps }) {
+  return (<>
+    <TopBar/>
+    <Component {...pageProps} />
+    <Navbar/>
+  </>);
 }
