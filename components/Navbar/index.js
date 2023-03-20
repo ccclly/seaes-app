@@ -13,8 +13,13 @@ import styles from '@/styles/Navbar.module.css';
 export default function Navbar() {
   const router = useRouter();
   const [value, setValue] = useState(router.pathname);
+  console.log('nav刷新')
   return (
-    <Box className={styles.btmBar} >
+    <Box className={styles.btmBar}
+       sx={{
+         display: { xs: 'block', sm: 'none' },
+       }}
+    >
       <BottomNavigation
         showLabels
         value={value}

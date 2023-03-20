@@ -4,8 +4,3 @@
     width: 100vw;
 }
 
-@media (min-width: 700px) {
-    .btmBar {
-        visibility: hidden;
-    }
-}
