@@ -10,7 +10,8 @@ import {
 
 import styles from '@/styles/Topbar.module.css';
 
-export default function () {
+export default function ({url}) {
+
   const pages = [
     { name: '主页', url: '/' },
     { name: '安全学习', url: '/learn' },
@@ -35,6 +36,7 @@ export default function () {
             <Button
               key={page.url}
               color="secondary"
+              variant={(page.url===url)?'outlined':'text'}
               // sx={{ my: 2, color: 'white', display: 'block' }}
             >
               <Link href={page.url}>{page.name}</Link>

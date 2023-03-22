@@ -39,7 +39,7 @@ export default function Home () {
           实验室是科研机构相关人员从事科研工作的主要场所,也是重大科研成果的诞生地。实验室安全是推进科研活动不断正常向前开展的基本保证。实验室安全准入教育是加强实验室规范教育的系统工程，面向教师、学生进行实验安全、操作规范和专业能力教育与考核，考核合格、具备相应实验知识、能力、素质的人员获得准入资格才可以进入实验室管理、教学与学习、研究。围绕“安全意识树立、安全知识掌握、安全技能运用”的教育目标，建立科学完善的实验室安全课程及考核体系，使实验室达到一种安全、稳定、和谐的可持续状态。
         </Typography>
         <Grid container spacing={0}>
-          <Grid xs={6}>
+          <Grid xs={6} item>
             <Box>
               <Box>
                 <span >
@@ -49,7 +49,7 @@ export default function Home () {
               </Box>
               <List component="nav" aria-label="mailbox folders" sx={{paddingRight: 5}}>
                 {notice.map(value => (
-                  <ListItem divider button>
+                  <ListItem divider button key={value}>
                     {/*<ListItemText primary="Inbox" />*/}
                     <Typography noWrap={true}>{value}</Typography>
                   </ListItem>
@@ -57,14 +57,14 @@ export default function Home () {
               </List>
             </Box>
           </Grid>
-          <Grid xs={6}>
+          <Grid xs={6} item>
             <Box>
               <Typography gutterBottom>
                 规章制度
               </Typography>
               <List component="nav" aria-label="mailbox folders" sx={{paddingRight: 5}}>
                 {notice.map(value => (
-                  <ListItem divider button>
+                  <ListItem divider button key={value}>
                     {/*<ListItemText primary="Inbox" />*/}
                     <Typography noWrap={true}>{value}</Typography>
                   </ListItem>

@@ -33,7 +33,7 @@ export default function App ({ Component, pageProps }) {
 
   return (<ThemeProvider theme={theme}>
     <CssBaseline/>
-    <TopBar/>
+    <TopBar url={router.pathname}/>
     {isHome && <LeftBar setOpen={setOpen} open={open}/>}
     <Box
       sx={{
