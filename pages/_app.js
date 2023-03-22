@@ -1,5 +1,18 @@
 import '@/styles/globals.css';
 import {useState} from 'react';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+const themeOptions = {
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#ffffff',
+    },
+    secondary: {
+      main: '#9c27b0',
+    },
+  },
+};
 
 import Navbar from '@/components/Navbar';
 import TopBar from '@/components/TopBar';
@@ -14,11 +27,11 @@ import { useRouter } from 'next/router';
 
 export default function App ({ Component, pageProps }) {
   const router = useRouter();
-  const theme = useTheme();
+  const theme = createTheme(themeOptions);
   const isHome = (router.pathname === '/');
   const [open, setOpen] = useState(false);
 
-  return (<>
+  return (<ThemeProvider theme={theme}>
     <CssBaseline/>
     <TopBar/>
     {isHome && <LeftBar setOpen={setOpen} open={open}/>}
@@ -27,10 +40,10 @@ export default function App ({ Component, pageProps }) {
         width: { lg: isHome && `calc(100% - 460px)` },
         position: 'relative',
         left: { md: 0, lg: isHome && (open ? '100%' : 460) },
-        transition: open && theme.transitions.create('left', {
+        transition: (isHome) && theme.transitions.create('left', {
           easing: theme.transitions.easing.sharp,
           // duration: theme.transitions.duration.enteringScreen,
-          duration: 3000
+          duration: 375
         }),
       }}
     >
@@ -38,5 +51,5 @@ export default function App ({ Component, pageProps }) {
       <Component {...pageProps} />
     </Box>
     <Navbar/>
-  </>);
+  </ThemeProvider>);
 }

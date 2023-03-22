@@ -5,9 +5,10 @@ import {
   TextField,
   Toolbar,
   useTheme,
-  styled, Box,
+  styled, Box, Button, Fade,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import KeyIcon from '@mui/icons-material/Key';
 
 
 const drawerWidth = 460;
@@ -18,7 +19,7 @@ const openedMixin = (theme) => {
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       // duration: theme.transitions.duration.enteringScreen,
-      duration: 3000
+      duration: 375
     }),
     overflowX: 'hidden',
   });
@@ -28,7 +29,7 @@ const closedMixin = (theme) => ({
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     // duration: theme.transitions.duration.leavingScreen,
-    duration: 3000
+    duration: 375
   }),
   overflowX: 'hidden',
   width: drawerWidth,
@@ -102,11 +103,33 @@ export default function ({setOpen, open}) {
                    transition: theme.transitions.create('width', {
                      easing: theme.transitions.easing.sharp,
                      // duration: theme.transitions.duration.enteringScreen,
-                     duration: 3000
+                     duration: 375
                    }),
+                   '& label.Mui-focused': {
+                     color: '#9c27b0',
+                   },
+                   // '& .MuiInput-underline:after': {
+                   //   borderBottomColor: 'green',
+                   // },
+                   '& .MuiOutlinedInput-root': {
+                     '&.Mui-focused fieldset': {
+                       borderColor: '#9c27b0',
+                     },
+                   },
                  }}
                  size={'medium'}
       />
+      <Fade in={!open}>
+        <Button color={'secondary'} size="large" variant="outlined"
+                endIcon={<KeyIcon/>} sx={{
+          position: 'absolute',
+          bottom: 40,
+          left: 35,
+        }}>
+          后台入口
+        </Button>
+      </Fade>
+      {/*{!open&&*/}
       {open&&<Box sx={{
         position: 'absolute',
         right: -60,
