@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Grade } from '@mui/icons-material';
+import Link from 'next/link';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -45,7 +46,7 @@ export default function Home () {
                 <span >
                   通知公告
                 </span>
-                <Button color={'secondary'}>更多</Button>
+                <Button color={'secondary'}><Link href={'/notices'}>更多</Link></Button>
               </Box>
               <List component="nav" aria-label="mailbox folders" sx={{paddingRight: 5}}>
                 {notice.map(value => (

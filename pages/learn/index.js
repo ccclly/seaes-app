@@ -15,11 +15,11 @@ export default () => {
         <Paper key={value.name} elevation={3} sx={{ width: 400, height: 300 }}>
           <Card>
             <CardActionArea>
-            <CardMedia
-              component="img"
-              image={value.img}
-              alt="Paella dish"
-            />
+              <CardMedia
+                component="img"
+                image={value.img}
+                alt="Paella dish"
+              />
               <Typography gutterBottom variant="h5" component="div">
                 {value.name}
               </Typography>
