@@ -5,11 +5,12 @@ import {
   TextField,
   Toolbar,
   useTheme,
-  styled, Box, Button, Fade,
+  styled, Box, Button, Fade, Slide,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import KeyIcon from '@mui/icons-material/Key';
-
+import LoginIcon from '@mui/icons-material/Login';
+import Link from 'next/link';
 
 const drawerWidth = 460;
 
@@ -86,6 +87,18 @@ export default function ({setOpen, open}) {
       open={open}
     >
       <Toolbar sx={{mb: 20}}/>
+      <Link href={'/mine'}>
+        <Slide in={!open} direction={'right'} mountOnEnter unmountOnExit>
+          <Button color={'secondary'} size="small" variant="outlined"
+                  startIcon={<LoginIcon/>} sx={{
+            position: 'absolute',
+            top: 90,
+            left: 35,
+          }}>
+            登录
+          </Button>
+        </Slide>
+      </Link>
       <TextField id="outlined-basic" label="输入想了解的内容" variant="outlined"
                  InputProps={{
                    startAdornment: (
@@ -119,7 +132,7 @@ export default function ({setOpen, open}) {
                  }}
                  size={'medium'}
       />
-      <Fade in={!open}>
+      <Slide in={!open} direction={'up'} mountOnEnter unmountOnExit>
         <Button color={'secondary'} size="large" variant="outlined"
                 endIcon={<KeyIcon/>} sx={{
           position: 'absolute',
@@ -128,7 +141,7 @@ export default function ({setOpen, open}) {
         }}>
           后台入口
         </Button>
-      </Fade>
+      </Slide>
       {/*{!open&&*/}
       {open&&<Box sx={{
         position: 'absolute',
