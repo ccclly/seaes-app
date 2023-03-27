@@ -55,8 +55,8 @@ export default () => {
       <Grid container spacing={2}
             sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'left' }}>
 
-        {dataList.map(value => (
-          <Grid item>
+        {dataList.map((value, index) => (
+          <Grid item key={index}>
             <Grow in>
               <Card key={value.name} elevation={3}
                     sx={{ width: { xs: 225, sm: 250, md: 260 }, height: 240 }}>
