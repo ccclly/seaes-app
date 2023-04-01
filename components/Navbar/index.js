@@ -1,7 +1,12 @@
 // components/Navbar.jsx
 import {useState} from 'react';
 import { useRouter } from 'next/router';
-import { BottomNavigation, BottomNavigationAction, Box } from '@mui/material';
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Box,
+  Paper,
+} from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
@@ -13,12 +18,13 @@ import styles from '@/styles/Navbar.module.css';
 export default function Navbar() {
   const router = useRouter();
   const [value, setValue] = useState(router.pathname);
-  console.log('nav刷新')
   return (
-    <Box className={styles.btmBar}
-       sx={{
-         display: { xs: 'block', sm: 'none' },
-       }}
+    <Paper className={styles.btmBar}
+           elevation={3}
+           sx={{
+             display: { xs: 'block', sm: 'none' },
+             zIndex: 10000
+           }}
     >
       <BottomNavigation
         showLabels
@@ -33,6 +39,6 @@ export default function Navbar() {
         <BottomNavigationAction label="考试" value={'/exam'} icon={<BorderColorIcon />} />
         <BottomNavigationAction label="我的" value={'/mine'} icon={<AccountBoxIcon />} />
       </BottomNavigation>
-    </Box>
+    </Paper>
   );
 }
