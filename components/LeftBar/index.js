@@ -139,7 +139,9 @@ export default function ({setOpen, open}) {
           bottom: 40,
           left: 35,
         }}>
-          后台入口
+          <Link href={'/admin'}>
+            后台入口
+          </Link>
         </Button>
       </Slide>
       {/*{!open&&*/}

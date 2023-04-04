@@ -12,17 +12,12 @@ import {
 } from '@mui/material';
 import { Grade } from '@mui/icons-material';
 import Link from 'next/link';
+import defaultUrl from '@/constant/url';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export default function Home () {
-  const notice = [
-    '教育部办公厅关于进一步加强高校教学实验室安全检查工作的通知',
-    '教育部要求高校自查实验室安全:出过事的重点关注',
-    '爆炸带走三学生生命 高校实验室安全风险如何消弭？',
-    '北京交通大学“12·26”事故调查报告公布'];
-  const ruler = ['教育部办公厅关于进一步加强高校教学实验室安全检查工作的通知'];
-  const course = []
+export default function Home ({data}) {
+  const { notices = [], rules = [], courses= [] } = data;
 
   return (
     <>
@@ -45,15 +40,15 @@ export default function Home () {
             <Box>
               <Box>
                 <span >
-                  通知公告
+                  最新通知公告
                 </span>
                 <Button color={'secondary'}><Link href={'/notices'}>更多</Link></Button>
               </Box>
               <List component="nav" aria-label="mailbox folders" sx={{paddingRight: 5}}>
-                {notice.map(value => (
-                  <ListItem divider button key={value}>
+                {notices.map(value => (
+                  <ListItem divider button key={value.title}>
                     {/*<ListItemText primary="Inbox" />*/}
-                    <Typography noWrap={true}>{value}</Typography>
+                    <Typography noWrap={true}>{value.title}</Typography>
                   </ListItem>
                 ))}
               </List>
@@ -63,15 +58,15 @@ export default function Home () {
             <Box>
               <Box>
                 <span>
-                  规章制度
+                  最新规章制度
                 </span>
                 <Button color={'secondary'}><Link href={'/rules'}>更多</Link></Button>
               </Box>
               <List component="nav" aria-label="mailbox folders" sx={{paddingRight: 5}}>
-                {notice.map(value => (
-                  <ListItem divider button key={value}>
+                {rules.map(value => (
+                  <ListItem divider button key={value.title}>
                     {/*<ListItemText primary="Inbox" />*/}
-                    <Typography noWrap={true}>{value}</Typography>
+                    <Typography noWrap={true}>{value.title}</Typography>
                   </ListItem>
                 ))}
               </List>
@@ -146,118 +141,22 @@ export default function Home () {
               <Card>
                 <CardMedia
                   component="img"
-                  image="http://localhost:8080/image/01.jpg"
+                  // image="http://localhost:8080/image/01.jpg"
                   alt="Paella dish"
                 />
               </Card>
             </Grid>
           </Grid>
         </Grid>
-        {/*<Box className={styles.NAndR}>*/}
-        {/*</Box>*/}
-        {/*<div className={styles.description}>*/}
-        {/*  <p>*/}
-        {/*    Get started by editing&nbsp;*/}
-        {/*    <code className={styles.code}>pages/index.js</code>*/}
-        {/*  </p>*/}
-        {/*  <div>*/}
-        {/*    <a*/}
-        {/*      href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"*/}
-        {/*      target="_blank"*/}
-        {/*      rel="noopener noreferrer"*/}
-        {/*    >*/}
-        {/*      By{' '}*/}
-        {/*      <Image*/}
-        {/*        src="/vercel.svg"*/}
-        {/*        alt="Vercel Logo"*/}
-        {/*        className={styles.vercelLogo}*/}
-        {/*        width={100}*/}
-        {/*        height={24}*/}
-        {/*        priority*/}
-        {/*      />*/}
-        {/*    </a>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-
-        {/*<div className={styles.center}>*/}
-        {/*  <Image*/}
-        {/*    className={styles.logo}*/}
-        {/*    src="/next.svg"*/}
-        {/*    alt="Next.js Logo"*/}
-        {/*    width={180}*/}
-        {/*    height={37}*/}
-        {/*    priority*/}
-        {/*  />*/}
-        {/*  <div className={styles.thirteen}>*/}
-        {/*    <Image*/}
-        {/*      src="/thirteen.svg"*/}
-        {/*      alt="13"*/}
-        {/*      width={40}*/}
-        {/*      height={31}*/}
-        {/*      priority*/}
-        {/*    />*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-
-        {/*<div className={styles.grid}>*/}
-        {/*  <a*/}
-        {/*    href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"*/}
-        {/*    className={styles.card}*/}
-        {/*    target="_blank"*/}
-        {/*    rel="noopener noreferrer"*/}
-        {/*  >*/}
-        {/*    <h2 className={inter.className}>*/}
-        {/*      Docs <span>-&gt;</span>*/}
-        {/*    </h2>*/}
-        {/*    <p className={inter.className}>*/}
-        {/*      Find in-depth information about Next.js features and&nbsp;API.*/}
-        {/*    </p>*/}
-        {/*  </a>*/}
-
-        {/*  <a*/}
-        {/*    href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"*/}
-        {/*    className={styles.card}*/}
-        {/*    target="_blank"*/}
-        {/*    rel="noopener noreferrer"*/}
-        {/*  >*/}
-        {/*    <h2 className={inter.className}>*/}
-        {/*      Learn <span>-&gt;</span>*/}
-        {/*    </h2>*/}
-        {/*    <p className={inter.className}>*/}
-        {/*      Learn about Next.js in an interactive course with&nbsp;quizzes!*/}
-        {/*    </p>*/}
-        {/*  </a>*/}
-
-        {/*  <a*/}
-        {/*    href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"*/}
-        {/*    className={styles.card}*/}
-        {/*    target="_blank"*/}
-        {/*    rel="noopener noreferrer"*/}
-        {/*  >*/}
-        {/*    <h2 className={inter.className}>*/}
-        {/*      Templates <span>-&gt;</span>*/}
-        {/*    </h2>*/}
-        {/*    <p className={inter.className}>*/}
-        {/*      Discover and deploy boilerplate example Next.js&nbsp;projects.*/}
-        {/*    </p>*/}
-        {/*  </a>*/}
-
-        {/*  <a*/}
-        {/*    href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"*/}
-        {/*    className={styles.card}*/}
-        {/*    target="_blank"*/}
-        {/*    rel="noopener noreferrer"*/}
-        {/*  >*/}
-        {/*    <h2 className={inter.className}>*/}
-        {/*      Deploy <span>-&gt;</span>*/}
-        {/*    </h2>*/}
-        {/*    <p className={inter.className}>*/}
-        {/*      Instantly deploy your Next.js site to a shareable URL*/}
-        {/*      with&nbsp;Vercel.*/}
-        {/*    </p>*/}
-        {/*  </a>*/}
-        {/*</div>*/}
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(content) {
+  // Fetch data from external API
+  const res = await fetch(defaultUrl+`/index`)
+  const data = await res.json()
+  // Pass data to the page via props
+  return { props: { data } }
 }

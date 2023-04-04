@@ -29,11 +29,11 @@ export default function App ({ Component, pageProps }) {
   const router = useRouter();
   const theme = createTheme(themeOptions);
   const isHome = (router.pathname === '/');
+  const isAdmin = router.pathname === '/admin'
   const [open, setOpen] = useState(false);
-
   return (<ThemeProvider theme={theme}>
     <CssBaseline/>
-    <TopBar url={router.pathname}/>
+    {!isAdmin&&<TopBar url={router.pathname}/>}
     {isHome && <LeftBar setOpen={setOpen} open={open}/>}
     <Box
       sx={{
@@ -50,6 +50,6 @@ export default function App ({ Component, pageProps }) {
       <Toolbar/>
       <Component {...pageProps} />
     </Box>
-    <Navbar/>
+    {!isAdmin &&<Navbar/>}
   </ThemeProvider>);
 }
