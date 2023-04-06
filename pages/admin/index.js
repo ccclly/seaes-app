@@ -1,18 +1,21 @@
 import AdminLogin from '@/components/Login/AdminLogin';
-import { useEffect } from 'react';
+import Dashboard from '@/components/DashBoard';
+import { useEffect, useState } from 'react';
 
 export default function () {
-  let isAdminLogin = {}
+  const [adminLogin, setAdminLogin] = useState(false);
   useEffect(() => {
-    isAdminLogin = JSON.parse(localStorage.getItem('adminLoginInfo'))
-  }, [isAdminLogin])
+    const adminInfo = JSON.parse(localStorage.getItem('adminToken'))
+    setAdminLogin(adminInfo)
+  }, [adminLogin])
 
   return(
     <>
       {
-        isAdminLogin?
-          <AdminLogin/>:
-          <div>dashboard</div>
+        !!adminLogin?
+          <Dashboard/>
+          :
+          <AdminLogin setAdminLogin={setAdminLogin}/>
       }
     </>
   );

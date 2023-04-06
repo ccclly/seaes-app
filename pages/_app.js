@@ -47,7 +47,7 @@ export default function App ({ Component, pageProps }) {
         }),
       }}
     >
-      <Toolbar/>
+      {!isAdmin&&<Toolbar/>}
       <Component {...pageProps} />
     </Box>
     {!isAdmin &&<Navbar/>}

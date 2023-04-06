@@ -1,129 +1,122 @@
-// import { Helmet } from 'react-helmet-async';
-// @mui
-import { styled } from '@mui/material/styles';
-import {
-  Link,
-  Container,
-  Typography,
-  Divider,
-  Stack,
-  Button,
-  useTheme, useMediaQuery, TextField, InputAdornment, IconButton, Box, Checkbox,
-} from '@mui/material';
-import { useState } from 'react';
-import { LoadingButton } from '@mui/lab';
+import * as React from 'react';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from '/Util/request';
 
-// hooks
-// import useResponsive from '../hooks/useResponsive';
-// components
-// import Logo from '../components/logo';
-// import Iconify from '../components/iconify';
-// sections
-// import { LoginForm } from '../sections/auth/login';
-
-// ----------------------------------------------------------------------
-
-const StyledRoot = styled('div')(({ theme }) => ({
-  [theme.breakpoints.up('md')]: {
-    display: 'flex',
-  },
-}));
+function Copyright(props) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Copyright © '}
+      <Link color="inherit" href="/">
+        实验室安全教育与考试系统
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
 
 
-const StyledSection = styled('div')(({ theme }) => ({
-  width: '100%',
-  maxWidth: 480,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  // boxShadow: theme.,
-  backgroundColor: theme.palette.background.default,
-}));
+const theme = createTheme();
 
-const StyledContent = styled('div')(({ theme }) => ({
-  maxWidth: 480,
-  margin: 'auto',
-  minHeight: '100vh',
-  display: 'flex',
-  justifyContent: 'center',
-  flexDirection: 'column',
-  padding: theme.spacing(12, 0),
-}));
-
-// ----------------------------------------------------------------------
-
-export default function LoginPage() {
-  const theme = useTheme();
-  const mdUp = useMediaQuery(theme.breakpoints.up('md'));
-
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleClick = (event) => {
-    console.log('click')
-  }
+export default function SignInSide({setAdminLogin}) {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    axios.post('/admin/login', {
+      name: data.get('name'),
+      password: data.get('password')
+    }).then(res =>{
+      localStorage.setItem('adminToken', JSON.stringify(res.data));
+      setAdminLogin(res.data);
+    }).catch(err =>{
+      console.log('失败')
+    })
+  };
 
   return (
-    <>
-
-      <StyledRoot>
-        {/*<Logo*/}
-        {/*  sx={{*/}
-        {/*    position: 'fixed',*/}
-        {/*    top: { xs: 16, sm: 24, md: 40 },*/}
-        {/*    left: { xs: 16, sm: 24, md: 40 },*/}
-        {/*  }}*/}
-        {/*/>*/}
-
-        {mdUp && (
-          <StyledSection>
-            <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              Hi, Welcome Back
+    <ThemeProvider theme={theme}>
+      <Grid container component="main" sx={{ height: '100vh' }}>
+        <CssBaseline />
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={7}
+          sx={{
+            backgroundImage: 'url(https://source.unsplash.com/random)',
+            backgroundRepeat: 'no-repeat',
+            backgroundColor: (t) =>
+              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          <Box
+            sx={{
+              my: 8,
+              mx: 4,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              管理员登录
             </Typography>
-            {/*<img src="/assets/illustrations/illustration_login.png" alt="login" />*/}
-          </StyledSection>
-        )}
-
-        <Container maxWidth="sm">
-          <StyledContent>
-            <Typography variant="h4" gutterBottom>
-              Sign in to Minimal
-            </Typography>
-
-
-            <Box>
-              <Stack spacing={3}>
-                <TextField name="email" label="Email address" />
-
-                <TextField
-                  name="password"
-                  label="Password"
-                  type={showPassword ? 'text' : 'password'}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                          {/*<Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />*/}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Stack>
-
-              <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-                <Checkbox name="remember" label="Remember me" />
-                <Link variant="subtitle2" underline="hover">
-                  Forgot password?
-                </Link>
-              </Stack>
-
-              <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleClick}>
-                Login
-              </LoadingButton>
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="name"
+                label="账号"
+                name="name"
+                autoComplete="text"
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="密码"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+              />
+              {/*<FormControlLabel*/}
+              {/*  control={<Checkbox value="remember" color="primary" />}*/}
+              {/*  label="记住密码"*/}
+              {/*/>*/}
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                登录
+              </Button>
+              <Copyright sx={{ mt: 5 }} />
             </Box>
-          </StyledContent>
-        </Container>
-      </StyledRoot>
-    </>
+          </Box>
+        </Grid>
+      </Grid>
+    </ThemeProvider>
   );
 }
