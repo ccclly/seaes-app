@@ -9,6 +9,10 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     // 在发送请求之前做些什么
+    const token = JSON.parse(localStorage.getItem('token'));
+    if (token) {
+      config.headers['token'] = token
+    }
     return config;
   },
   (error) => {

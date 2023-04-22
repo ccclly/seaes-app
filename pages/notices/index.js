@@ -12,7 +12,7 @@ import InfoList from '@/components/Information/InfoList';
 import defaultUrl from '@/constant/url';
 
 export default function ({data}){
-  return (<InfoList type={'notices'} data={data}/>)
+  return (<InfoList type={'notice'} data={data}/>)
 }
 
 

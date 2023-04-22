@@ -1,21 +1,27 @@
 import AdminLogin from '@/components/Login/AdminLogin';
 import Dashboard from '@/components/DashBoard';
 import { useEffect, useState } from 'react';
+import request from '@/Util/request';
 
 export default function () {
-  const [adminLogin, setAdminLogin] = useState(false);
+  const [token, setToken] = useState(null);
+
   useEffect(() => {
-    const adminInfo = JSON.parse(localStorage.getItem('adminToken'))
-    setAdminLogin(adminInfo)
-  }, [adminLogin])
+    const tokenValue = localStorage.getItem('token');
+    if (tokenValue)
+      // request.get('/user/test').then(value => {
+      //   console.log(value.data);
+        setToken(tokenValue)
+      // });
+  }, []);
 
   return(
     <>
       {
-        !!adminLogin?
+        token?
           <Dashboard/>
           :
-          <AdminLogin setAdminLogin={setAdminLogin}/>
+          <AdminLogin setToken={setToken} />
       }
     </>
   );

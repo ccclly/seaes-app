@@ -13,7 +13,7 @@ export default function ({type, data}) {
   return (<Container>
     <Paper sx={{
       padding: 4,
-      mt: 5
+      mt: 5,
     }} elevation={4}>
       <Breadcrumbs aria-label="breadcrumb">
         <Link underline="hover" color="inherit" href="/">
@@ -22,22 +22,24 @@ export default function ({type, data}) {
         <Link
           underline="hover"
           color="text.primary"
-          href={type==='notices'?'/notices':'/rules'}
+          href={type === 'notice' ? '/notices' : '/rules'}
           aria-current="page"
         >
-          {type==='notices'?'通知公告':'规章制度'}
+          {type === 'notice' ? '通知公告' : '规章制度'}
         </Link>
       </Breadcrumbs>
-      <List component="nav" aria-label="mailbox folders" sx={{paddingRight: 0}}>
-        {data.reverse().map(value => (
-          <ListItem divider button key={value.title}>
-            {/*<ListItemText primary="Inbox" />*/}
-            <Typography noWrap={true}>{value.title}</Typography>
+      <List component="nav" aria-label="mailbox folders"
+            sx={{ paddingRight: 0 }}>
+        {data.reverse().map((value, index) => (
+          <ListItem divider button key={index}>
+            <Link href={'/' + type + '/' + value.id}>
+              <Typography noWrap={true}>{value.title}</Typography>
+            </Link>
           </ListItem>
         ))}
       </List>
     </Paper>
-  </Container>)
+  </Container>);
 }
 
 

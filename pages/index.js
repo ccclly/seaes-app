@@ -35,20 +35,29 @@ export default function Home ({data}) {
         <Typography gutterBottom>
           实验室是科研机构相关人员从事科研工作的主要场所,也是重大科研成果的诞生地。实验室安全是推进科研活动不断正常向前开展的基本保证。实验室安全准入教育是加强实验室规范教育的系统工程，面向教师、学生进行实验安全、操作规范和专业能力教育与考核，考核合格、具备相应实验知识、能力、素质的人员获得准入资格才可以进入实验室管理、教学与学习、研究。围绕“安全意识树立、安全知识掌握、安全技能运用”的教育目标，建立科学完善的实验室安全课程及考核体系，使实验室达到一种安全、稳定、和谐的可持续状态。
         </Typography>
-        <Grid container spacing={0} >
+        <Grid container spacing={0}>
           <Grid xs={12} sm={6} item>
             <Box>
               <Box>
-                <span >
+                <span>
                   最新通知公告
                 </span>
-                <Button color={'secondary'}><Link href={'/notices'}>更多</Link></Button>
+                <Button color={'secondary'}><Link
+                  href={'/notices'}>更多</Link></Button>
               </Box>
-              <List component="nav" aria-label="mailbox folders" sx={{paddingRight: 5}}>
-                {notices.map(value => (
-                  <ListItem divider button key={value.title}>
-                    {/*<ListItemText primary="Inbox" />*/}
-                    <Typography noWrap={true}>{value.title}</Typography>
+              <List component="nav" aria-label="mailbox folders"
+                    sx={{ paddingRight: 5 }}>
+                {notices.map((value, index) => (
+                  <ListItem divider button key={index}>
+                    <Link style={{
+                      width: '100%'
+                    }} href={'/notices/' + value.id}>
+                      <Typography noWrap={true} sx={{
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOrientation: 'ellipsis'
+                      }}>{value.title}</Typography>
+                    </Link>
                   </ListItem>
                 ))}
               </List>
@@ -60,13 +69,18 @@ export default function Home ({data}) {
                 <span>
                   最新规章制度
                 </span>
-                <Button color={'secondary'}><Link href={'/rules'}>更多</Link></Button>
+                <Button color={'secondary'}><Link
+                  href={'/rules'}>更多</Link></Button>
               </Box>
-              <List component="nav" aria-label="mailbox folders" sx={{paddingRight: 5}}>
-                {rules.map(value => (
-                  <ListItem divider button key={value.title}>
-                    {/*<ListItemText primary="Inbox" />*/}
-                    <Typography noWrap={true}>{value.title}</Typography>
+              <List component="nav" aria-label="mailbox folders"
+                    sx={{ paddingRight: 5 }}>
+                {rules.map((value, index) => (
+                  <ListItem divider button key={index}>
+                    <Link style={{
+                      width: '100%'
+                    }} href={'/rules/' + value.id}>
+                      <Typography noWrap={true}>{value.title}</Typography>
+                    </Link>
                   </ListItem>
                 ))}
               </List>
@@ -77,7 +91,7 @@ export default function Home ({data}) {
           <Box>
             安全课程
           </Box>
-          <Grid container columns={5} sx={{height: 280}} spacing={1}>
+          <Grid container columns={5} sx={{ height: 280 }} spacing={1}>
             <Grid xs={1} item>
               <Card>
                 <CardMedia
@@ -86,32 +100,32 @@ export default function Home ({data}) {
                   alt="Paella dish"
                 />
                 {/*<CardContent>*/}
-                  <Typography gutterBottom component="div">
-                    生物实验室
-                  </Typography>
+                <Typography gutterBottom component="div">
+                  生物实验室
+                </Typography>
                 {/*</CardContent>*/}
               </Card>
             </Grid>
             <Grid xs={1} item>
               <Grid container rowSpacing={1}>
-              <Grid item>
-                <Card>
-                  <CardMedia
-                    component="img"
-                    image="/image/02.jpg"
-                    alt="Paella dish"
-                  />
-                </Card>
-              </Grid>
-              <Grid item>
-                <Card>
-                  <CardMedia
-                    component="img"
-                    image="/image/03.jpg"
-                    alt="Paella dish"
-                  />
-                </Card>
-              </Grid>
+                <Grid item>
+                  <Card>
+                    <CardMedia
+                      component="img"
+                      image="/image/02.jpg"
+                      alt="Paella dish"
+                    />
+                  </Card>
+                </Grid>
+                <Grid item>
+                  <Card>
+                    <CardMedia
+                      component="img"
+                      image="/image/03.jpg"
+                      alt="Paella dish"
+                    />
+                  </Card>
+                </Grid>
               </Grid>
             </Grid>
             <Grid xs={1} item>

@@ -1,39 +1,29 @@
 import { Breadcrumbs, Container, Paper, Typography } from '@mui/material';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import request from '@/Util/request';
+import { useRouter } from 'next/router';
 
 export default function ({type}) {
-  const detail = '教技司〔2018〕254号\n' +
-    '各省、自治区、直辖市教育厅（教委），新疆生产建设兵团教育局，有关部门（单位）教育（科技）司（局），部属各高等学校：\n' +
-    '　　为贯彻党中央、国务院关于安全生产工作的系列重要指示精神，落实国务院安委会有关要求，进一步提升高等学校实验室安全管理水平，确保广大师生人身安全和校园和谐稳定，按照教育部关于切实维护高等学校安全稳定的统一部署，2018年将继续开展高等学校科研实验室安全检查工作。现将有关事项通知如下：\n' +
-    '　　一、总体要求和重点\n' +
-    '　　按照安全生产“党政同责、一岗双责、齐抓共管、失职追责”的要求，以及上一轮高等学校科研实验室安全检查发现的问题，本次检查重点是高等学校科研实验室安全领导责任制建立和责任体系建设、安全自查制度落实及实验室重大安全隐患排查。\n' +
-    '　　二、检查对象和实施范围\n' +
-    '　　检查范围以教育部直属高等学校科研实验室为主，对于近3年发生安全事故、上次检查发现未有效建立安全领导责任体系的高等学校将列为重点检查对象。\n' +
-    '　　省、自治区、直辖市教育行政主管部门按照本通知要求对所辖高等学校自行组织检查，并将有关情况抄报我司，必要时可申请与我司组成联合检查组进行检查。\n' +
-    '　　三、工作安排\n' +
-    '　　本次高等学校科研实验室安全检查工作，由我司负责组织，委托教育部科技发展中心作为第三方机构负责具体实施，工作分为三个阶段实施。\n' +
-    '　　（一）高等学校自查自纠阶段（2018年7-9月）\n' +
-    '　　1. 各高等学校按照要求进行布署动员，结合自身实际，制定安全检查与专项整治实施方案。请参照《高等学校实验室安全检查项目表（2018）》（附件1），组织对本校各类科研实验室及相关场所进行全面检查和自查。\n' +
-    '　　2. 各高等学校应对自查中发现的问题建立安全隐患台账，及时进行整改，做好整改记录，对短期无法整改的要制定切实可行的整改方案。对于上一轮检查提出的问题没有整改到位的，检查组将作为重点事项上报。\n' +
-    '　　3. 各高等学校应于9月30日之前，将《XX大学实验室安全隐患自查台账》（附件2）提交至教育部科技发展中心指定邮箱。\n' +
-    '　　（二）现场抽查阶段（2018年10-11月）\n' +
-    '　　由教育部科技发展中心组织“教育部实验室安全技术专家组”专家，开展现场抽查。自检查之日提前3个工作日通知被查高等学校，每校检查1天。检查程序包括：听取情况汇报、查阅相关资料、实施现场检查、检查意见反馈。\n' +
-    '　　（三）整改总结阶段（2018年11-12月）\n' +
-    '　　1. 高等学校在收到书面通知1个月内，向检查专家组组长提交整改报告。\n' +
-    '　　2. 各检查专家组分别形成小组报告，由教育部科技发展中心编制高等学校科研实验室安全检查年度报告上报。\n' +
-    '　　联系人：教育部科技发展中心 孔 翦\n' +
-    '　　电 话：010-82503990\n' +
-    '　　邮 箱：educma@cutech.edu.cn\n' +
-    '　　联系人：教育部科技司基础处　王 梁\n' +
-    '　　电 话：010-66096298\n' +
-    '　　邮 箱：kjsjcc@moe.edu.cn\n' +
-    '\n' +
-    '2019-04-19 14:50:52'
+
+  const [state, setState] = useState({});
+  const router = useRouter();
+  const { id } = router.query;
+  useEffect(() => {
+    if (!!id) {
+      const url = '/notice/' + id;
+      request.get(url).then(value => {
+        setState(value.data);
+      });
+    }
+
+  }, [id]);
 
   return (<Container>
     <Paper sx={{
       padding: 4,
-      mt: 5
+      mt: 5,
+      mb: 5
     }} elevation={4}>
       <Breadcrumbs aria-label="breadcrumb">
         <Link underline="hover" color="inherit" href="/">
@@ -42,10 +32,10 @@ export default function ({type}) {
         <Link
           underline="hover"
           color="text.primary"
-          href={type==='notices'?'/notices':'/rules'}
+          href={type==='notice'?'/notices':'/rules'}
           aria-current="page"
         >
-          {type==='notices'?'通知公告':'规章制度'}
+          {type==='notice'?'通知公告':'规章制度'}
         </Link>
         <Link
           underline="hover"
@@ -53,16 +43,13 @@ export default function ({type}) {
           aria-current="page"
           href={''}
         >
-          {'这是标题'}
+          {state.title}
         </Link>
       </Breadcrumbs>
-      <Typography>
-        {'这是标题'}
+      <Typography textAlign={'center'} mt={2}>
+        {state.title}
       </Typography>
-
-      <Typography>
-        {detail}
-      </Typography>
+        <div dangerouslySetInnerHTML={{ __html: state.description }}/>
     </Paper>
   </Container>)
 }

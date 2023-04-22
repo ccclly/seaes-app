@@ -30,16 +30,16 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignInSide({setAdminLogin}) {
+export default function SignInSide({setToken}) {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    axios.post('/admin/login', {
+    axios.post('/user/login', {
       name: data.get('name'),
       password: data.get('password')
     }).then(res =>{
-      localStorage.setItem('adminToken', JSON.stringify(res.data));
-      setAdminLogin(res.data);
+      localStorage.setItem('token', JSON.stringify(res.data.token));
+      setToken(res.data.token)
     }).catch(err =>{
       console.log('失败')
     })

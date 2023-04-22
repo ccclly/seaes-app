@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useState} from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
@@ -17,7 +18,14 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems, secondaryListItems } from './listItems';
+import { MainListItems } from './ListItems';
+import menu from '@/constant/backendMenu';
+import DashBoardPane from '@/components/DashBoard/DashBoardPane';
+import UserManage from '@/components/DashBoard/UserManage';
+import ExamRelease from '@/components/DashBoard/ExamRelease';
+import QuestionBank from '@/components/DashBoard/QuestionBank';
+import CourseManage from '@/components/DashBoard/CourseManage';
+import NoticeManage from '@/components/DashBoard/NoticeManage';
 // import Chart from './Chart';
 // import Deposits from './Deposits';
 // import Orders from './Orders';
@@ -26,8 +34,8 @@ function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
+      <Link color="inherit" href="/">
+        实验室安全教育与考试系统
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -84,7 +92,17 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
 function DashboardContent() {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(true);
+  const [current, setCurrent] = useState(menu.DASHBOARD);
+  const currentPane = () => {
+    if (current === menu.DASHBOARD) return <DashBoardPane />
+    else if (current === menu.USERMANAGE) return <UserManage/>
+    else if (current === menu.EXAMRELEASE) return <ExamRelease/>
+    else if (current === menu.QUESTIONBANKMANAGE) return <QuestionBank />
+    else if (current === menu.COURSEMANAGE) return <CourseManage />
+    else if (current === menu.NOTICEMANAGE) return <NoticeManage />
+  }
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -120,11 +138,11 @@ function DashboardContent() {
             >
               后台仪表盘
             </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+            {/*<IconButton color="inherit">*/}
+            {/*  <Badge badgeContent={4} color="secondary">*/}
+            {/*    <NotificationsIcon />*/}
+            {/*  </Badge>*/}
+            {/*</IconButton>*/}
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
@@ -142,7 +160,7 @@ function DashboardContent() {
           </Toolbar>
           <Divider />
           <List component="nav">
-            {mainListItems}
+            <MainListItems setCurrent={setCurrent}/>
             {/*<Divider sx={{ my: 1 }} />*/}
             {/*{secondaryListItems}*/}
           </List>
@@ -161,6 +179,7 @@ function DashboardContent() {
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            {currentPane()}
             {/*<Grid container spacing={3}>*/}
             {/*  /!* Chart *!/*/}
             {/*  <Grid item xs={12} md={8} lg={9}>*/}

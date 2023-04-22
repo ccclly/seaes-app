@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
+import request from '@/Util/request';
 
 
 
@@ -31,7 +32,9 @@ export default function UserLogin() {
 
 
   const handleSubmit = (ev) => {
-    console.log('yes')
+    ev.preventDefault();
+    const data = new FormData(ev.currentTarget);
+    request.post('/')
   }
 
   return (
