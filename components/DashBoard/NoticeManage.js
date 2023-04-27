@@ -1,5 +1,5 @@
-import { Box, Button, Modal, TextField, Typography } from '@mui/material';
-import { useState } from 'react';
+import { Box, Button, List, ListItem, Modal, Paper, TextField, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 import React, { useCallback, useMemo } from 'react';
 import RichText from '../RichText';
@@ -11,6 +11,15 @@ export default () => {
   const [state, setState] = useState('');
   const [open, setOpen] = useState(false);
   const [type, setType] = useState('');
+  const [notice, setNotice] = useState([]);
+  const [rule, setRule] = useState([]);
+  useEffect(() => {
+    request.get("/notice/list").then(value => setNotice(value.data))
+    request.get("/rule/list").then(value => setRule(value.data))
+    return () => {
+    };
+  }, []);
+
   const createNotice = () => {
     setType('notice');
     setOpen(true);
@@ -49,6 +58,7 @@ export default () => {
       <Button variant={'contained'} onClick={createRule}>
         发布规章制度
       </Button>
+
       {open && <Box >
         <Typography id="modal-modal-title" variant="h6" component="h2">
           创建新{type === 'notice' ? '通知消息' : '规章制度'}

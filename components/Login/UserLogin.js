@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
-import request from '@/Util/request';
+import request1 from '@/Util/request1';
 
 
 
@@ -28,13 +28,19 @@ function Copyright(props) {
   );
 }
 
-export default function UserLogin() {
+export default function UserLogin({setIsLogin}) {
 
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
     const data = new FormData(ev.currentTarget);
-    request.post('/')
+    request1.post('/user/login',{
+      name: data.get('name'),
+      password: data.get('password')
+    }).then(value => {
+      localStorage.setItem('loginInfo', JSON.stringify(value.data));
+      setIsLogin(value.data)
+    })
   }
 
   return (
@@ -59,9 +65,9 @@ export default function UserLogin() {
               margin="normal"
               required
               fullWidth
-              id="email"
+              id="name"
               label="账号"
-              name="email"
+              name="name"
               autoFocus
               color={'secondary'}
             />

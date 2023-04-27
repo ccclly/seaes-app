@@ -22,11 +22,13 @@ export default function (){
   return(
     <Container>
       {state&&<MyPlayer
-        option={{
-          videoSrc: 'http://localhost:8080/' + path,
-          width: '100%',
-          // height: 420,
-        }}
+        // option={{
+        //   videoSrc: 'http://localhost:8080/' + path,
+        //   width: '100%',
+        //   // height: 420,
+        // }}
+        url={'http://localhost:8080/' + path}
+        controls={true}
       />}
 
     </Container>

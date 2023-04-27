@@ -21,6 +21,18 @@ const columns = [
     width: 120,
   },
   {
+    field: 'user_type',
+    headerName: '用户类型',
+    valueGetter: (param) => {
+      if (param.row.userType == 0) {
+        return '普通用户';
+      } else if (param.row.userType == 1) {
+        return '管理员'
+      }
+    },
+    width: 80
+  },
+  {
     field: 'grade',
     headerName: '年级',
     width: 100,

@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic';
 
 const MyReactPlayer = dynamic(() => import("jol-player"), { ssr: false });
-export default MyReactPlayer;
+const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
+export default ReactPlayer;

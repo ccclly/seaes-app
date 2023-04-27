@@ -2,27 +2,34 @@ import {
   Avatar,
   Box, Button, Checkbox,
   Container,
-  CssBaseline, FormControlLabel, Grid,
+  CssBaseline, FormControlLabel, Grid, Paper,
   TextField,
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import UserLogin from '@/components/Login/UserLogin';
 
 
 export default () => {
-  let isLogin = {}
+  const [isLogin, setIsLogin] = useState(null);
   useEffect(() => {
-    isLogin = JSON.parse(localStorage.getItem('loginInfo'))
+    const info = JSON.parse(localStorage.getItem('loginInfo'))
+    setIsLogin(info)
   }, [])
   return(
     <>
       {
-        !isLogin?
-          <div>mine</div>
-          :<UserLogin/>
+        isLogin?
+          <Paper sx={{
+            padding: 4,
+            m: 5
+          }} elevation={2}
+          >
+
+          </Paper>
+          :<UserLogin setIsLogin={setIsLogin}/>
       }
     </>
   )

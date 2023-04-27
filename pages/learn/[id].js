@@ -15,6 +15,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import request from '@/Util/request';
+import url from '@/constant/url';
+
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -103,10 +105,10 @@ export default function () {
           }}>
             <CardMedia
               component="img"
-              image={'/image/01.jpg'}
+              image={url+'/'+state.imgName}
               alt="Paella dish"
               sx={{
-                width: 300,
+                width: 450,
                 height: 240,
               }}
             />
@@ -137,9 +139,11 @@ export default function () {
                     {state.lessonList.map((value1, index) => (
                       value.id == value1.chapterId &&
                       <ListItem key={index} disablePadding divider>
-                        <ListItemButton>
-                          {value1.name}
-                        </ListItemButton>
+                        <Link href={'/learn/c/'+ value1.vedioName}>
+                          <ListItemButton>
+                            {value1.name}
+                          </ListItemButton>
+                        </Link>
                       </ListItem>
                     ))}
                   </List>

@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {
   Button,
   Card, CardActionArea,
@@ -8,16 +8,21 @@ import {
   styled, Typography,
 } from '@mui/material';
 import StartIcon from '@mui/icons-material/Start';
+import request1 from '@/Util/request1'
+import Link from 'next/link';
 
 
 export default function () {
   const [num, setNum] = useState('10');
-  const examList = [{
-    name: '化学实验室考试',
-    sTime: '2023/1/1 19:00',
-    eTime: '2023/1/1 20:00',
-    delay: '30'
-  }]
+  const [examList, setExamList] = useState([])
+  useEffect(()=>{
+    const info = JSON.parse(localStorage.getItem('loginInfo'))
+    console.log(info)
+    if(info)
+      request1.get('/exam/e/'+info.id).then(value => {
+        setExamList(value.data)
+      })
+  }, [])
 
   const handleChange = (event) => {
     setNum(event.target.value);
@@ -27,14 +32,13 @@ export default function () {
     <Container sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', pt: 5, flexDirection: 'column'}}>
       <Card elevation={5} sx={{ width: {xs: 400, md: 500, lg: 600}, display: 'flex'}}>
         <CardActionArea disableSpacing sx={{height: 200, flex: 1}}>
+          <Link href={'/exam/test/' +num}>
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
               题库自测
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              题库内包含500+道题，帮助你巩固安全知识
-            </Typography>
           </CardContent>
+          </Link>
         </CardActionArea>
         <CardActions disableSpacing sx={{flex: 1}} >
           <FormControl fullWidth color={'secondary'}>
@@ -65,9 +69,9 @@ export default function () {
             {examList.map((value, index) => (
               <ListItem key={index}>
                 {value.name}
-                进入时间：{value.sTime}-{value.eTime}
-                考试时长：{value.delay}
-                <Button color={'secondary'}>进入考试</Button>
+                <Link href={'/exam/' + value.id}>
+                  <Button color={'secondary'}>进入考试</Button>
+                </Link>
               </ListItem>
             ))}
           </List>

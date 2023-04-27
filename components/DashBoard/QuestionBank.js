@@ -369,7 +369,7 @@ export default function () {
       width: 80,
     },
     {
-      field: 'analysis',
+      field: 'analysisDesc',
       headerName: '解析',
       width: 150,
       editable: true,
@@ -377,7 +377,7 @@ export default function () {
     {
       field: 'actions',
       type: 'actions',
-      headerName: 'Actions',
+      headerName: '操作',
       width: 100,
       cellClassName: 'actions',
       getActions: ({ id }) => {
@@ -478,13 +478,16 @@ export default function () {
           }}
           pageSizeOptions={[10]}
           localeText={zhCN.components.MuiDataGrid.defaultProps.localeText}
-          rowModesModel={rowModesModel}
-          onRowModesModelChange={handleRowModesModelChange}
-          onRowEditStart={handleRowEditStart}
-          onRowEditStop={handleRowEditStop}
-          processRowUpdate={processRowUpdate}
+          // rowModesModel={rowModesModel}
+          // onRowModesModelChange={handleRowModesModelChange}
+          // onRowEditStart={handleRowEditStart}
+          // onRowEditStop={handleRowEditStop}
+          // processRowUpdate={processRowUpdate}
           slots={{
             toolbar: EditToolbar,
+          }}
+          onCellEditCommit={(params) => {
+            console.log(params)
           }}
           slotProps={{
             toolbar: { setRows, setRowModesModel, rows },

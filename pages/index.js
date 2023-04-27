@@ -89,77 +89,32 @@ export default function Home ({data}) {
         </Grid>
         <Grid container>
           <Box>
-            安全课程
+            <span>
+              安全课程
+            </span>
+              <Button color={'secondary'}><Link
+                href={'/learn'}>更多</Link></Button>
           </Box>
-          <Grid container columns={5} sx={{ height: 280 }} spacing={1}>
-            <Grid xs={1} item>
-              <Card>
-                <CardMedia
-                  component="img"
-                  image="/image/01.jpg"
-                  alt="Paella dish"
-                />
-                {/*<CardContent>*/}
-                <Typography gutterBottom component="div">
-                  生物实验室
-                </Typography>
-                {/*</CardContent>*/}
-              </Card>
-            </Grid>
-            <Grid xs={1} item>
-              <Grid container rowSpacing={1}>
-                <Grid item>
-                  <Card>
-                    <CardMedia
-                      component="img"
-                      image="/image/02.jpg"
-                      alt="Paella dish"
-                    />
-                  </Card>
-                </Grid>
-                <Grid item>
-                  <Card>
-                    <CardMedia
-                      component="img"
-                      image="/image/03.jpg"
-                      alt="Paella dish"
-                    />
-                  </Card>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid xs={1} item>
-              <Grid container rowSpacing={1}>
-                <Grid item>
-                  <Card>
-                    <CardMedia
-                      component="img"
-                      image="/image/04.jpg"
-                      alt="Paella dish"
-                    />
-                  </Card>
-                </Grid>
-                <Grid item>
-                  <Card>
-                    <CardMedia
-                      component="img"
-                      image="/image/05.jpg"
-                      alt="Paella dish"
-                    />
-                  </Card>
-                </Grid>
+          <Grid container sx={{ height: 280 }} spacing={1}>
 
+            {courses.map((val, index) => (
+              <Grid xs={3} item key={index}>
+                <Card>
+                  <Link href={'/learn/'+val.id}>
+                  <CardMedia
+                    component="img"
+                    image={defaultUrl+'/'+val.imgName}
+                    alt="Paella dish"
+                  />
+                  </Link>
+                  {/*<CardContent>*/}
+                  {/*</CardContent>*/}
+                </Card>
+                <Typography gutterBottom component="div">
+                  {val.name}
+                </Typography>
               </Grid>
-            </Grid>
-            <Grid xs={2} item>
-              <Card>
-                <CardMedia
-                  component="img"
-                  // image="http://localhost:8080/image/01.jpg"
-                  alt="Paella dish"
-                />
-              </Card>
-            </Grid>
+            ))}
           </Grid>
         </Grid>
       </main>

@@ -34,12 +34,12 @@ export default function App ({ Component, pageProps }) {
   return (<ThemeProvider theme={theme}>
     <CssBaseline/>
     {!isAdmin&&<TopBar url={router.pathname}/>}
-    {isHome && <LeftBar setOpen={setOpen} open={open}/>}
+    {/*{isHome && <LeftBar setOpen={setOpen} open={open}/>}*/}
     <Box
       sx={{
-        width: { lg: isHome ? `calc(100% - 460px)` : '100%' },
+        // width: { lg: isHome ? `calc(100% - 460px)` : '100%' },
         position: 'relative',
-        left: { md: 0, lg: isHome && (open ? '100%' : 460) },
+        // left: { md: 0, lg: isHome && (open ? '100%' : 460) },
         transition: (isHome) && theme.transitions.create('left', {
           easing: theme.transitions.easing.sharp,
           // duration: theme.transitions.duration.enteringScreen,
