@@ -5,12 +5,12 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 const themeOptions = {
   palette: {
     mode: 'light',
-    primary: {
-      main: '#ffffff',
-    },
-    secondary: {
-      main: '#9c27b0',
-    },
+    // primary: {
+    //   main: '#ffffff',
+    // },
+    // secondary: {
+    //   main: '#9c27b0',
+    // },
   },
 };
 

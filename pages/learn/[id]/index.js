@@ -139,7 +139,7 @@ export default function () {
                     {state.lessonList.map((value1, index) => (
                       value.id == value1.chapterId &&
                       <ListItem key={index} disablePadding divider>
-                        <Link href={'/learn/c/'+ value1.vedioName}>
+                          <Link href={'/learn/' + id+'/'+value1.id +'/'+ value1.vedioName}>
                           <ListItemButton>
                             {value1.name}
                           </ListItemButton>

@@ -19,10 +19,13 @@ const columns = [
     field: 'name',
     headerName: '用户名',
     width: 120,
+    editable: true,
+
   },
   {
     field: 'user_type',
     headerName: '用户类型',
+    editable: true,
     valueGetter: (param) => {
       if (param.row.userType == 0) {
         return '普通用户';
@@ -30,7 +33,7 @@ const columns = [
         return '管理员'
       }
     },
-    width: 80
+    width: 100
   },
   {
     field: 'grade',
@@ -48,24 +51,25 @@ const columns = [
     field: 'major',
     headerName: '班级',
     sortable: false,
+    editable: true,
     width: 160,
   },
-  {
-    field: 'num',
-    headerName: '刷题数量',
-    width: 150
-  },
-  {
-    field: 'actions',
-    headerName: 'Actions',
-    renderCell: (params) => (
-      <Box onClick={event => {
-        console.log(params)
-      }}>
-        <Button variant={'contained'} startIcon={<Save/>}>保存</Button>
-      </Box>
-    ),
-  },
+  // {
+  //   field: 'num',
+  //   headerName: '刷题数量',
+  //   width: 150
+  // },
+  // {
+  //   field: 'actions',
+  //   headerName: '操作',
+  //   renderCell: (params) => (
+  //     <Box onClick={event => {
+  //       console.log(params)
+  //     }}>
+  //       <Button variant={'contained'} startIcon={<Save/>}>保存</Button>
+  //     </Box>
+  //   ),
+  // },
 ];
 
 
@@ -260,7 +264,7 @@ export default function (){
           </Box>
         </Box>
       </Modal>
-      {/*<Button variant={'contained'} onClick={createUser}>添加新用户</Button>*/}
+      <Button variant={'contained'} onClick={createUser}>添加新用户</Button>
       <Box sx={{ height: 500, width: '100%' }}>
         <DataGrid
           rows={rows}

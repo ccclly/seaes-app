@@ -48,7 +48,7 @@ const SCQuestions = ({ state, setState, index, data, finish }) => {
         {data.choice.map((item, index) => !!item && (
           <ListItem
             variant="outlined"
-            key={item}
+            key={item.name}
             sx={{ boxShadow: '', bgcolor: 'background.body' }}
           >
             <ListItemDecorator>
@@ -56,8 +56,8 @@ const SCQuestions = ({ state, setState, index, data, finish }) => {
             </ListItemDecorator>
             <Radio
               overlay
-              value={['A', 'B', 'C', 'D'][index]}
-              label={item}
+              value={item.name}
+              label={item.name}
               disabled={finish}
               sx={{ flexGrow: 1, flexDirection: 'row-reverse' }}
               slotProps={{
@@ -127,8 +127,9 @@ const MCQuestions = ({ state, setState, index: p_index, data, finish }) => {
       {data.choice.map((value, index) => (
         <Sheet key={index} variant="outlined"
                sx={{ bgcolor: 'background.body' }}>
+          {['A', 'B', 'C', 'D '][index]}
           <Checkbox
-            label={value}
+            label={value.name}
             overlay
             disabled={finish}
             // Force the outline to appear in the demo. Usually, you don't need this in your project.
@@ -189,23 +190,24 @@ const TOFQuestions = ({ state, setState, index, data, finish }) => {
         <Typography>
           {index + 1 + '. ' + data.desc}
         </Typography>
-        {['正确', '错误'].map((item, index) => (
+        {data.choice.map((item, index) => (
           <ListItem
             variant="outlined"
-            key={item}
+            key={item.name}
             sx={{ boxShadow: 'sm', bgcolor: 'background.body' }}
           >
             <ListItemDecorator>
+            
               {[
                 <CheckCircleOutlineIcon/>,
                 <HighlightOffIcon/>][index]}
             </ListItemDecorator>
             <Radio
               overlay
-              value={item}
+              value={item.name}
               disabled={finish}
 
-              label={item}
+              label={item.name}
               sx={{ flexGrow: 1, flexDirection: 'row-reverse' }}
               slotProps={{
                 action: ({ checked }) => ({
@@ -242,18 +244,13 @@ export default function () {
   useEffect(() => {
     console.log(num)
     if (!!num) {
-      const url = '/problem/rand/' + num;
-        request1.get(url).then(value => {
+      const url = '/paper/de/7';
+        request1.get(url).then((value) => {
           console.log(value.data);
-          const data = value.data.map(val => {
+          const data = value.data.quList.map((val, index) => {
             const t = {};
             t.desc = val.name;
-            t.choice = [
-              val.choiceA,
-              val.choiceB,
-              val.choiceC,
-              val.choiceD,
-            ];
+            t.choice = value.data.quansList[index];
             t.choiceIsTrue =[
               val.choiceAIsTrue,
               val.choiceBIsTrue,
@@ -280,41 +277,41 @@ export default function () {
   }, [state]);
 
   const handleSubmit = (ev) => {
-    // const data = qList.map((value, index) => {
-    //   let obj = {
-    //     choiceAIsTrue: false,
-    //     choiceBIsTrue: false,
-    //     choiceCIsTrue: false,
-    //     choiceDIsTrue: false,
-    //   };
-    //   if (typeof state.get(index) == 'string') {
-    //     switch (state.get(index)) {
-    //       case 'A':
-    //         obj.choiceAIsTrue = true;
-    //         break;
-    //       case 'B':
-    //         obj.choiceBIsTrue = true;
-    //         break;
-    //       case 'C':
-    //         obj.choiceCIsTrue = true;
-    //         break;
-    //       case 'D':
-    //         obj.choiceDIsTrue = true;
-    //         break;
-    //     }
-    //   } else {
-    //     const m = state.get(index);
-    //     if (m.get(0)) obj.choiceAIsTrue = true;
-    //     if (m.get(1)) obj.choiceBIsTrue = true;
-    //     if (m.get(2)) obj.choiceCIsTrue = true;
-    //     if (m.get(3)) obj.choiceDIsTrue = true;
-    //   }
-    //   obj.examId = id;
-    //   obj.problemId = value.id;
-    //   return obj;
-    // });
-    // console.log(data);
-    setFinish(true)
+    const data = qList.map((value, index) => {
+      let obj = {
+        choiceAIsTrue: false,
+        choiceBIsTrue: false,
+        choiceCIsTrue: false,
+        choiceDIsTrue: false,
+      };
+      if (typeof state.get(index) == 'string') {
+        switch (state.get(index)) {
+          case 'A':
+            obj.choiceAIsTrue = true;
+            break;
+          case 'B':
+            obj.choiceBIsTrue = true;
+            break;
+          case 'C':
+            obj.choiceCIsTrue = true;
+            break;
+          case 'D':
+            obj.choiceDIsTrue = true;
+            break;
+        }
+      } else {
+        const m = state.get(index);
+        if (m.get(0)) obj.choiceAIsTrue = true;
+        if (m.get(1)) obj.choiceBIsTrue = true;
+        if (m.get(2)) obj.choiceCIsTrue = true;
+        if (m.get(3)) obj.choiceDIsTrue = true;
+      }
+      
+      
+      return obj;
+    });
+    console.log(data);
+    // setFinish(true)
   };
 
   return (

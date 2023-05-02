@@ -8,11 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import styles from '@/styles/Topbar.module.css';
-import { CssVarsProvider, StyledEngineProvider } from '@mui/joy/styles';
-import RadioGroup from '@mui/joy/RadioGroup';
-import Sheet from '@mui/joy/Sheet';
-import Radio from '@mui/joy/Radio';
+
 
 export default function ({url}) {
 
@@ -39,13 +35,14 @@ export default function ({url}) {
           {pages.map((page) => (
             <Button
               key={page.url}
-              color="secondary"
+              // color="secondary"
               variant={(page.url===url)?'outlined':'text'}
-              // sx={{ my: 2, color: 'white', display: 'block' }}
-              sx={{
-                width:100,
-                ml: 1
-              }}
+              sx={{ my: 2, color: 'white', display: 'block',width:100,
+                ml: 1 }}
+              // sx={{
+              //   width:100,
+              //   ml: 1
+              // }}
             >
               <Link href={page.url}>{page.name}</Link>
               {/*{page.name}*/}

@@ -21,6 +21,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import request from '@/Util/request';
+import { error } from 'next/dist/build/output/log';
 
 const rowFn = (
   id, name, type, choiceA, A, choiceB, B, choiceC, C, choiceD, D, accuracy,
@@ -203,7 +204,7 @@ function EditToolbar (props) {
   };
 
   return (
-    <GridToolbarContainer>
+    <Box>
       <Button color="primary" startIcon={<AddIcon/>} onClick={handleClick}>
         新建题目
       </Button>
@@ -270,7 +271,7 @@ function EditToolbar (props) {
         </Box>
 
       </Modal>
-    </GridToolbarContainer>
+    </Box>
   );
 }
 
@@ -282,6 +283,7 @@ EditToolbar.propTypes = {
 
 export default function () {
   const [rows, setRows] = useState([]);
+  const [rowId, setRowId] = useState(null);
   useEffect(() => {
     request.get('/problem/list').then(value => {
       setRows(value.data);
@@ -380,91 +382,31 @@ export default function () {
       headerName: '操作',
       width: 100,
       cellClassName: 'actions',
-      getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
-        if (isInEditMode) {
-          return [
-            <GridActionsCellItem
-              icon={<SaveIcon/>}
-              label="Save"
-              onClick={handleSaveClick(id)}
-            />,
-            <GridActionsCellItem
-              icon={<CancelIcon/>}
-              label="Cancel"
-              className="textPrimary"
-              onClick={handleCancelClick(id)}
-              color="inherit"
-            />,
-          ];
+      renderCell: (params) =>{
+        const handleDelete = () => {
+          const data = {...params.row}
+          request.post('/problem/delete', data).then(value => {
+            // setRows(value.data);
+            console.log(value)
+            if (value.data.status === 500) {
+              console.log('删除失败')
+            }
+          }).catch(error => {
+            console.log(error)
+          })
         }
-
-        return [
-          <GridActionsCellItem
-            icon={<EditIcon/>}
-            label="Edit"
-            className="textPrimary"
-            onClick={handleEditClick(id)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
-            icon={<DeleteIcon/>}
-            label="Delete"
-            onClick={handleDeleteClick(id)}
-            color="inherit"
-          />,
-        ];
+        return(<Button onClick={handleDelete} startIcon={<DeleteIcon color={'error'}/>} color={'error'}>删除</Button>)
       },
     },
   ];
 
-  const handleRowEditStart = (params, event) => {
-    event.defaultMuiPrevented = true;
-  };
 
-  const handleRowEditStop = (params, event) => {
-    event.defaultMuiPrevented = true;
-  };
 
-  const handleEditClick = (id) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-  };
-
-  const handleSaveClick = (id) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-  };
-
-  const handleDeleteClick = (id) => () => {
-    setRows(rows.filter((row) => row.id !== id));
-  };
-
-  const handleCancelClick = (id) => () => {
-    setRowModesModel({
-      ...rowModesModel,
-      [id]: { mode: GridRowModes.View, ignoreModifications: true },
-    });
-
-    const editedRow = rows.find((row) => row.id === id);
-    if (editedRow.isNew) {
-      setRows(rows.filter((row) => row.id !== id));
-    }
-  };
-
-  const processRowUpdate = (newRow) => {
-    const updatedRow = { ...newRow, isNew: false };
-    setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    console.log(newRow);
-    return updatedRow;
-  };
-
-  const handleRowModesModelChange = (newRowModesModel) => {
-    setRowModesModel(newRowModesModel);
-  };
 
   return (
     <>
       <Box sx={{ height: 550, width: '100%', m: 0 }}>
+        <EditToolbar setRowModesModel={setRowModesModel} setRows={setRows} rows={rows}/>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -478,20 +420,18 @@ export default function () {
           }}
           pageSizeOptions={[10]}
           localeText={zhCN.components.MuiDataGrid.defaultProps.localeText}
-          // rowModesModel={rowModesModel}
-          // onRowModesModelChange={handleRowModesModelChange}
-          // onRowEditStart={handleRowEditStart}
-          // onRowEditStop={handleRowEditStop}
-          // processRowUpdate={processRowUpdate}
-          slots={{
-            toolbar: EditToolbar,
+          // slots={{
+          //   toolbar: EditToolbar,
+          // }}
+          onRowEditStop={params => {
+            const data = {...params.row}
+            request.post('/problem/update', data).then(value => {
+              console.log(value.data)
+            })
           }}
-          onCellEditCommit={(params) => {
-            console.log(params)
-          }}
-          slotProps={{
-            toolbar: { setRows, setRowModesModel, rows },
-          }}
+          // slotProps={{
+          //   toolbar: { setRows, setRowModesModel, rows },
+          // }}
         />
       </Box>
     </>

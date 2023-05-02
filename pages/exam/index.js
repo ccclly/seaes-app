@@ -5,7 +5,7 @@ import {
   CardActions, CardContent, Collapse,
   Container, FormControl,
   IconButton, InputLabel, List, ListItem, MenuItem, NativeSelect, Select,
-  styled, Typography,
+  styled, Typography,Box
 } from '@mui/material';
 import StartIcon from '@mui/icons-material/Start';
 import request1 from '@/Util/request1'
@@ -15,13 +15,15 @@ import Link from 'next/link';
 export default function () {
   const [num, setNum] = useState('10');
   const [examList, setExamList] = useState([])
+  const [login, setLogin] = useState(false)
   useEffect(()=>{
     const info = JSON.parse(localStorage.getItem('loginInfo'))
     console.log(info)
-    if(info)
+    if(info){
+      setLogin(true)
       request1.get('/exam/e/'+info.id).then(value => {
         setExamList(value.data)
-      })
+      })}
   }, [])
 
   const handleChange = (event) => {
@@ -65,6 +67,7 @@ export default function () {
           考试列表
         </CardActions>
         <CardActions disableSpacing sx={{flex: 1}} >
+          {!login?<Box>请先去登录</Box>:
           <List>
             {examList.map((value, index) => (
               <ListItem key={index}>
@@ -74,7 +77,7 @@ export default function () {
                 </Link>
               </ListItem>
             ))}
-          </List>
+          </List>}
         </CardActions>
       </Card>
     </Container>

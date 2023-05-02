@@ -32,7 +32,7 @@ export default function ({type, data}) {
             sx={{ paddingRight: 0 }}>
         {data.reverse().map((value, index) => (
           <ListItem divider button key={index}>
-            <Link href={'/' + type + '/' + value.id}>
+            <Link href={'/' + (type === 'notice'?'notices':'rules') + '/' + value.id}>
               <Typography noWrap={true}>{value.title}</Typography>
             </Link>
           </ListItem>
