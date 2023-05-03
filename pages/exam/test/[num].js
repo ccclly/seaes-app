@@ -23,13 +23,16 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useRouter } from 'next/router';
 import request1 from '@/Util/request1';
 
-const SCQuestions = ({ state, setState, index, data, finish }) => {
+const SCQuestions = ({ state, setState, index, data, finish, fillAns }) => {
+
   return (<>
     <RadioGroup
       // defaultValue="Individual"
       // value={state[index]}
       onChange={event => {
-        !finish&&setState(new Map(state).set(index, event.target.value));
+        console.log(event.target.value)
+        fillAns(data.id, [event.target.value])
+        // !finish&&setState(new Map(state).set(index, event.target.value));
       }
       }
     >
@@ -48,7 +51,7 @@ const SCQuestions = ({ state, setState, index, data, finish }) => {
         {data.choice.map((item, index) => !!item && (
           <ListItem
             variant="outlined"
-            key={item.name}
+            key={item.id}
             sx={{ boxShadow: '', bgcolor: 'background.body' }}
           >
             <ListItemDecorator>
@@ -56,7 +59,7 @@ const SCQuestions = ({ state, setState, index, data, finish }) => {
             </ListItemDecorator>
             <Radio
               overlay
-              value={item.name}
+              value={item.id}
               label={item.name}
               disabled={finish}
               sx={{ flexGrow: 1, flexDirection: 'row-reverse' }}
@@ -104,8 +107,8 @@ const SCQuestions = ({ state, setState, index, data, finish }) => {
     }
   </>);
 };
-const MCQuestions = ({ state, setState, index: p_index, data, finish }) => {
-  const [group, setGroup] = useState(new Map());
+const MCQuestions = ({ state, setState, index: p_index, data, finish, fillAns }) => {
+  const [group, setGroup] = useState(new Set());
 
   return (<>
     <FormGroup
@@ -156,10 +159,20 @@ const MCQuestions = ({ state, setState, index: p_index, data, finish }) => {
             checked={group[index]}
             onChange={event => {
               if (!finish) {
-                setGroup(new Map(group).set(index, event.target.checked));
-                setState(new Map(state).set(p_index,
-                  new Map(group).set(index, event.target.checked)));
+                setGroup(prevState => {
+                  let n = new Set(prevState);
+                  if (prevState.has(data.choice[index].id))
+                    n.delete(data.choice[index].id)
+                  else
+                    n.add(data.choice[index].id);
+                  fillAns(data.id, [...n])
+                  return n;
+                })
+                // console.log(index);
+                // setState(new Map(state).set(p_index,
+                //   new Map(group).set(index, event.target.checked)));
               }
+
             }}
           />
         </Sheet>
@@ -168,13 +181,14 @@ const MCQuestions = ({ state, setState, index: p_index, data, finish }) => {
     </FormGroup>
   </>);
 };
-const TOFQuestions = ({ state, setState, index, data, finish }) => {
+const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
 
   return (
     <RadioGroup aria-label="Your plan" name="people"
                 onChange={event => {
-                  !finish&&setState(
-                    new Map(state).set(index, (event.target.value === '正确' ? 'A' : 'B')));
+                  // !finish&&setState(
+                  //   new Map(state).set(index, (event.target.value === '正确' ? 'A' : 'B')));
+                  fillAns(data.id, [event.target.value])
                 }}
                 disabled={finish}
     >
@@ -204,7 +218,7 @@ const TOFQuestions = ({ state, setState, index, data, finish }) => {
             </ListItemDecorator>
             <Radio
               overlay
-              value={item.name}
+              value={item.id}
               disabled={finish}
 
               label={item.name}
@@ -241,12 +255,23 @@ export default function () {
   const { num } = router.query;
   const [finish, setFinish] = useState(false);
   const [qList, setQList] = useState([]);
+  const [paperId, setPaperId] = useState(0);
+
+  const fillAns = (quId, ansId) => {
+    request1.post('/paper/fill-answer', {
+      paperId: paperId,
+      questionId: quId,
+      ansIds: ansId
+    }).then(value => console.log(value.data))
+  }
+
   useEffect(() => {
     console.log(num)
     if (!!num) {
       const url = '/paper/de/7';
         request1.get(url).then((value) => {
           console.log(value.data);
+          setPaperId(value.data.paper.id)
           const data = value.data.quList.map((val, index) => {
             const t = {};
             t.desc = val.name;
@@ -329,14 +354,14 @@ export default function () {
               {qList.map((value, index) => {
                 if (value.type == 0) {
                   return <SCQuestions finish={finish} key={index} index={index} state={state}
-                                      setState={setState} data={qList[index]}/>;
+                                      setState={setState} data={qList[index]} fillAns={fillAns}/>;
                 } else if (value.type == 1) {
                   return <MCQuestions finish={finish} key={index} index={index} state={state}
-                                      setState={setState}
+                                      setState={setState} fillAns={fillAns}
                                       data={qList[index]}/>;
                 } else {
                   return <TOFQuestions finish={finish} key={index} index={index} state={state} setState={setState}
-                                       data={qList[index]}/>;
+                                       data={qList[index]} fillAns={fillAns}/>;
                 }
               })}
               {qList.length > 0 && <Button sx={{

@@ -23,13 +23,13 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useRouter } from 'next/router';
 import request1 from '@/Util/request1';
 
-const SCQuestions = ({ state, setState, index, data }) => {
+const SCQuestions = ({ state, setState, index, data, finish }) => {
   return (<>
     <RadioGroup
       // defaultValue="Individual"
       // value={state[index]}
       onChange={event => {
-        setState(new Map(state).set(index, event.target.value));
+        !finish&&setState(new Map(state).set(index, event.target.value));
       }
       }
     >
@@ -48,7 +48,7 @@ const SCQuestions = ({ state, setState, index, data }) => {
         {data.choice.map((item, index) => !!item && (
           <ListItem
             variant="outlined"
-            key={item}
+            key={item.name}
             sx={{ boxShadow: '', bgcolor: 'background.body' }}
           >
             <ListItemDecorator>
@@ -56,18 +56,35 @@ const SCQuestions = ({ state, setState, index, data }) => {
             </ListItemDecorator>
             <Radio
               overlay
-              value={['A', 'B', 'C', 'D'][index]}
-              label={item}
+              value={item.name}
+              label={item.name}
+              disabled={finish}
               sx={{ flexGrow: 1, flexDirection: 'row-reverse' }}
               slotProps={{
                 action: ({ checked }) => ({
-                  sx: (theme) => ({
-                    ...(checked && {
+                  sx: (theme) => {
+                    let obj = {
                       inset: -1,
                       border: '2px solid',
-                      borderColor: theme.vars.palette.primary[500],
-                    }),
-                  }),
+                      borderColor: theme.vars.palette.primary[500]
+                    }
+                    if (checked&&!finish) return obj;
+                    else if ((checked&&finish&&data.choiceIsTrue[index])||(!checked&&finish&&data.choiceIsTrue[index])){
+                      obj.borderColor = '#357a38';
+                      return obj;
+                    }else if (checked&&finish&&!data.choiceIsTrue[index]){
+                      obj.borderColor ='#aa2e25';
+                      return obj;
+                    }
+                    // return ({
+                    //   borderColor: (finish && data.choiceIsTrue[index]) && '#357a38',
+                    //   ...((checked) && {
+                    //     inset: -1,
+                    //     border: '2px solid',
+                    //     borderColor: (finish && !data.choiceIsTrue[index]) ? '#aa2e25' : theme.vars.palette.primary[500],
+                    //   }),
+                    // });
+                  },
                 }),
               }}
             />
@@ -75,9 +92,19 @@ const SCQuestions = ({ state, setState, index, data }) => {
         ))}
       </List>
     </RadioGroup>
+    {
+      finish&&<Box>
+        <Typography>
+          正确答案：{data.choiceIsTrue[0]&&'A'} {data.choiceIsTrue[1]&&'B'} {data.choiceIsTrue[2]&&'C'} {data.choiceIsTrue[3]&&'D'}
+        </Typography>
+        <Typography>
+          解析： {data.analysisDesc}
+        </Typography>
+      </Box>
+    }
   </>);
 };
-const MCQuestions = ({ state, setState, index: p_index, data }) => {
+const MCQuestions = ({ state, setState, index: p_index, data, finish }) => {
   const [group, setGroup] = useState(new Map());
 
   return (<>
@@ -100,27 +127,39 @@ const MCQuestions = ({ state, setState, index: p_index, data }) => {
       {data.choice.map((value, index) => (
         <Sheet key={index} variant="outlined"
                sx={{ bgcolor: 'background.body' }}>
+          {['A', 'B', 'C', 'D '][index]}
           <Checkbox
-            label={value}
+            label={value.name}
             overlay
+            disabled={finish}
             // Force the outline to appear in the demo. Usually, you don't need this in your project.
             slotProps={{
               // action: { className: checkboxClasses.focusVisible }
               action: ({ checked }) => ({
-                sx: (theme) => ({
-                  ...(checked && {
+                sx: (theme) => {
+                  let obj = {
                     inset: -1,
                     border: '2px solid',
-                    borderColor: theme.vars.palette.primary[500],
-                  }),
-                }),
+                    borderColor: theme.vars.palette.primary[500]
+                  }
+                  if (checked&&!finish) return obj;
+                  else if ((checked&&finish&&data.choiceIsTrue[index])||(!checked&&finish&&data.choiceIsTrue[index])){
+                    obj.borderColor = '#357a38';
+                    return obj;
+                  }else if (checked&&finish&&!data.choiceIsTrue[index]){
+                    obj.borderColor ='#aa2e25';
+                    return obj;
+                  }
+                },
               }),
             }}
             checked={group[index]}
             onChange={event => {
-              setGroup(new Map(group).set(index, event.target.checked));
-              setState(new Map(state).set(p_index,
-                new Map(group).set(index, event.target.checked)));
+              if (!finish) {
+                setGroup(new Map(group).set(index, event.target.checked));
+                setState(new Map(state).set(p_index,
+                  new Map(group).set(index, event.target.checked)));
+              }
             }}
           />
         </Sheet>
@@ -129,14 +168,15 @@ const MCQuestions = ({ state, setState, index: p_index, data }) => {
     </FormGroup>
   </>);
 };
-const TOFQuestions = ({ state, setState, index, data }) => {
+const TOFQuestions = ({ state, setState, index, data, finish }) => {
 
   return (
     <RadioGroup aria-label="Your plan" name="people"
                 onChange={event => {
-                  setState(
+                  !finish&&setState(
                     new Map(state).set(index, (event.target.value === '正确' ? 'A' : 'B')));
                 }}
+                disabled={finish}
     >
       <List
         sx={{
@@ -150,30 +190,42 @@ const TOFQuestions = ({ state, setState, index, data }) => {
         <Typography>
           {index + 1 + '. ' + data.desc}
         </Typography>
-        {['正确', '错误'].map((item, index) => (
+        {data.choice.map((item, index) => (
           <ListItem
             variant="outlined"
-            key={item}
+            key={item.name}
             sx={{ boxShadow: 'sm', bgcolor: 'background.body' }}
           >
             <ListItemDecorator>
+
               {[
                 <CheckCircleOutlineIcon/>,
                 <HighlightOffIcon/>][index]}
             </ListItemDecorator>
             <Radio
               overlay
-              value={item}
-              label={item}
+              value={item.name}
+              disabled={finish}
+
+              label={item.name}
               sx={{ flexGrow: 1, flexDirection: 'row-reverse' }}
               slotProps={{
                 action: ({ checked }) => ({
-                  sx: (theme) => ({
-                    ...(checked && {
+                  sx: (theme) => {
+                    let obj = {
                       inset: -1,
                       border: '2px solid',
-                    }),
-                  }),
+                      borderColor: theme.vars.palette.primary[500]
+                    }
+                    if (checked&&!finish) return obj;
+                    else if ((checked&&finish&&data.choiceIsTrue[index])||(!checked&&finish&&data.choiceIsTrue[index])){
+                      obj.borderColor = '#357a38';
+                      return obj;
+                    }else if (checked&&finish&&!data.choiceIsTrue[index]){
+                      obj.borderColor ='#aa2e25';
+                      return obj;
+                    }
+                  },
                 }),
               }}
             />
@@ -191,18 +243,24 @@ export default function () {
   const [qList, setQList] = useState([]);
   useEffect(() => {
     if (!!id) {
-      const url = '/problem/exam_id/' + id;
-      request1.get(url).then(value => {
+      const url = '/paper/create';
+      const info = JSON.parse(localStorage.getItem('loginInfo'))
+      request1.post(url, {
+        userId: info.id,
+        examId: id
+      }).then(value => {
         console.log(value.data);
-        const data = value.data.map(val => {
+        const data = value.data.quList.map((val, index) => {
           const t = {};
           t.desc = val.name;
-          t.choice = [
-            val.choiceA,
-            val.choiceB,
-            val.choiceC,
-            val.choiceD,
+          t.choice = value.data.quansList[index];
+          t.choiceIsTrue =[
+            val.choiceAIsTrue,
+            val.choiceBIsTrue,
+            val.choiceCIsTrue,
+            val.choiceDIsTrue,
           ];
+          t.analysisDesc = val.analysisDesc
           t.type = val.type;
           t.id = val.id;
           return t;
@@ -302,28 +360,33 @@ export default function () {
     <StyledEngineProvider injectFirst>
       <CssVarsProvider>
         <Container>
-          {finish ?
-            <Box>已完成考试</Box>
-            : <Box>
-              {qList.map((value, index) => {
-                if (value.type == 0) {
-                  return <SCQuestions key={index} index={index} state={state}
-                                      setState={setState} data={qList[index]}/>;
-                } else if (value.type == 1) {
-                  return <MCQuestions key={index} index={index} state={state}
-                                      setState={setState}
-                                      data={qList[index]}/>;
-                } else {
-                  return <TOFQuestions key={index} index={index} state={state} setState={setState}
-                                       data={qList[index]}/>;
-                }
-              })}
-              {qList.length > 0 && <Button sx={{
-                width: '100%',
-                mt: 3,
-                mb: 3
-              }} onClick={handleSubmit}>提交</Button>}
-            </Box>}
+          <Box
+            sx={{
+              '.css-1bb01ub-JoyRadio-root.Joy-disabled, .css-1xxdwh2-JoyCheckbox-root.Joy-disabled, ': { color: '#25252d' },
+              '.css-1wtx7bg-JoyRadio-root.Joy-disabled': { color: '#25252d' },
+              '.css-1axruhw-JoyCheckbox-root.Joy-disabled': { color: '#25252d' },
+              '.css-dzmv7r-JoyRadio-radio.Joy-disabled': { color: '#3990FF' },
+            }}
+          >
+            {qList.map((value, index) => {
+              if (value.type == 0) {
+                return <SCQuestions finish={finish} key={index} index={index} state={state}
+                                    setState={setState} data={qList[index]}/>;
+              } else if (value.type == 1) {
+                return <MCQuestions finish={finish} key={index} index={index} state={state}
+                                    setState={setState}
+                                    data={qList[index]}/>;
+              } else {
+                return <TOFQuestions finish={finish} key={index} index={index} state={state} setState={setState}
+                                     data={qList[index]}/>;
+              }
+            })}
+            {qList.length > 0 && <Button sx={{
+              width: '100%',
+              mt: 3,
+              mb: 3
+            }} onClick={handleSubmit}>提交</Button>}
+          </Box>
         </Container>
       </CssVarsProvider>
     </StyledEngineProvider>
