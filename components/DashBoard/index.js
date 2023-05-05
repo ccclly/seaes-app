@@ -26,6 +26,8 @@ import ExamRelease from '@/components/DashBoard/ExamRelease';
 import QuestionBank from '@/components/DashBoard/QuestionBank';
 import CourseManage from '@/components/DashBoard/CourseManage';
 import NoticeManage from '@/components/DashBoard/NoticeManage';
+import RepositoryManage from '@/components/DashBoard/RepositoryManage';
+import EnterManage from '@/components/DashBoard/EnterManage';
 // import Chart from './Chart';
 // import Deposits from './Deposits';
 // import Orders from './Orders';
@@ -101,6 +103,8 @@ function DashboardContent() {
     else if (current === menu.QUESTIONBANKMANAGE) return <QuestionBank />
     else if (current === menu.COURSEMANAGE) return <CourseManage />
     else if (current === menu.NOTICEMANAGE) return <NoticeManage />
+    else if (current === menu.REPOSITORY) return <RepositoryManage/>
+    else if (current === menu.ENTERMANAGE) return <EnterManage/>
   }
 
   const toggleDrawer = () => {

@@ -15,21 +15,33 @@ import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import menu from '@/constant/backendMenu';
 
-export const MainListItems = ({setCurrent}) => {
+export const MainListItems = ({ setCurrent }) => {
   return (
     <>
       <React.Fragment>
-        <ListItemButton onClick={(e) => setCurrent(menu.DASHBOARD)}>
-          <ListItemIcon>
-            <DashboardIcon/>
-          </ListItemIcon>
-          <ListItemText primary="仪表盘主页"/>
-        </ListItemButton>
+        {/*<ListItemButton onClick={(e) => setCurrent(menu.DASHBOARD)}>*/}
+        {/*  <ListItemIcon>*/}
+        {/*    <DashboardIcon/>*/}
+        {/*  </ListItemIcon>*/}
+        {/*  <ListItemText primary="仪表盘主页"/>*/}
+        {/*</ListItemButton>*/}
         <ListItemButton onClick={(e) => setCurrent(menu.USERMANAGE)}>
           <ListItemIcon>
             <PeopleIcon/>
           </ListItemIcon>
           <ListItemText primary="用户管理"/>
+        </ListItemButton>
+        <ListItemButton onClick={(e) => setCurrent(menu.QUESTIONBANKMANAGE)}>
+          <ListItemIcon>
+            <CampaignIcon/>
+          </ListItemIcon>
+          <ListItemText primary="题库管理"/>
+        </ListItemButton>
+        <ListItemButton onClick={(e) => setCurrent(menu.REPOSITORY)}>
+          <ListItemIcon>
+            <StorageIcon/>
+          </ListItemIcon>
+          <ListItemText primary="试题管理"/>
         </ListItemButton>
         <ListItemButton onClick={(e) => setCurrent(menu.EXAMRELEASE)}>
           <ListItemIcon>
@@ -37,17 +49,17 @@ export const MainListItems = ({setCurrent}) => {
           </ListItemIcon>
           <ListItemText primary="考试发布"/>
         </ListItemButton>
-        <ListItemButton onClick={(e) => setCurrent(menu.QUESTIONBANKMANAGE)}>
-          <ListItemIcon>
-            <StorageIcon/>
-          </ListItemIcon>
-          <ListItemText primary="题库管理"/>
-        </ListItemButton>
         <ListItemButton onClick={(e) => setCurrent(menu.COURSEMANAGE)}>
           <ListItemIcon>
             <LocalLibraryIcon/>
           </ListItemIcon>
           <ListItemText primary="课程管理"/>
+        </ListItemButton>
+        <ListItemButton onClick={(e) => setCurrent(menu.ENTERMANAGE)}>
+          <ListItemIcon>
+            <CampaignIcon/>
+          </ListItemIcon>
+          <ListItemText primary="准入管理"/>
         </ListItemButton>
         <ListItemButton onClick={(e) => setCurrent(menu.NOTICEMANAGE)}>
           <ListItemIcon>

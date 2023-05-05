@@ -1,4 +1,13 @@
-import { Box, Button, List, ListItem, Modal, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button, FormControl,
+  InputLabel,
+  List,
+  ListItem, MenuItem,
+  Modal, Select,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import 'dayjs/locale/zh-cn';
@@ -9,7 +18,14 @@ import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import request from "@/Util/request";
 import { Save } from "@mui/icons-material";
-import { DataGrid, zhCN, GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  zhCN,
+  GRID_CHECKBOX_SELECTION_COL_DEF,
+  GridToolbarContainer,
+} from '@mui/x-data-grid';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 const style = {
   position: 'absolute',
@@ -136,12 +152,26 @@ const columns2 = [
   },
 ]
 
+function EditToolbar (props) {
+  const { createExam, handleDelete } = props;
+
+  return (
+    <GridToolbarContainer>
+      <Button color="primary" startIcon={<AddIcon/>} onClick={createExam}>
+        新建考试
+      </Button>
+      <Button color={'error'} startIcon={<DeleteOutlineIcon/>} onClick={handleDelete}>
+        删除考试
+      </Button>
+    </GridToolbarContainer>
+  );
+}
 export default function () {
 
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
-  const [id, setId] = useState(0);
+  const [id, setId] = useState(null);
   const [list, setList] = useState([])
   const [user, setUser] = useState([])
   const [problem, setProblem] = useState([])
@@ -152,31 +182,79 @@ export default function () {
     problem.filter((r) => r.selected == 1).map((r) => r.id),
   );
   const [selectedRows, setSelectedRows] = useState(null);
+  const [repository, setRepository] = useState([]);
+  const [selected, setSelected] = useState([]);
+  const [name, setName] = useState('');
+  const [totalTime, setTotalTime] = useState(0);
+  const [repositoryId, setRepositoryId] = useState('');
 
   const handleCreate = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     request.post('/exam/save', {
-      name: data.get('name')
+      name: data.get('name'),
+      totalTime: data.get('time'),
+      repositoryId: data.get('repositoryId'),
+      id: id
     }).then(value => {
       setList(value.data)
     })
     setOpen(false)
   }
-  const selectUser = (event) => {
-    event.preventDefault();
-
+  const handleDelete = () => {
+    selected.forEach(value => {
+      request.post('/exam/delete/' + value).then(value1 => setList(value1.data))
+    })
   }
-  const selectProblem = (event) => {
-    event.preventDefault();
-
+  const createExam = () => {
+    setName('')
+    setTotalTime(0)
+    setRepositoryId('')
+    setId(null)
+    setOpen(true)
   }
+  // const selectUser = (event) => {
+  //   event.preventDefault();
+  //
+  // }
+  // const selectProblem = (event) => {
+  //   event.preventDefault();
+  //
+  // }
   useEffect(() => {
     request.get('/exam/list').then(value => {
       setList(value.data)
     })
-
+    request.get('/repository/list').then(value => {
+      setRepository(value.data)
+    })
   }, []);
+
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 60 },
+    {
+      field: 'name',
+      headerName: '考试名称',
+      width: 420,
+    },
+    {
+      field: 'totalTime',
+      headerName: '考试时长',
+      width: 200
+    },
+    {
+      field: 'repositoryId',
+      headerName: '所选题库',
+      width: 200,
+      valueGetter: (param => {
+        let v = null;
+        repository.forEach(value => {
+          if (value.id === param.row.repositoryId) v = value.title;
+        });
+        return v;
+      }),
+    }
+  ]
 
   return (
     <>
@@ -186,7 +264,7 @@ export default function () {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            创建考试
+            创建/修改考试
           </Typography>
           <Box
             component={'form'}
@@ -204,131 +282,183 @@ export default function () {
               name="name"
               size={'small'}
               sx={{ width: 400 }}
+              defaultValue={name}
             />
-            <Button type={"submit"} variant={"contained"}>创建</Button>
+            <TextField
+              label={'考试时长'}
+              id={'name'}
+              name="time"
+              size={'small'}
+              sx={{ width: 400 }}
+              defaultValue={totalTime}
+            />
+            <FormControl>
+              <InputLabel id="demo-simple-select-label">选择题库</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label={'选择题库'}
+                size={'small'}
+                name={'repositoryId'}
+                defaultValue={repositoryId}
+              >
+                {repository.map(value => (
+                  <MenuItem key={value.id}
+                            value={value.id}>{value.title}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Button type={"submit"} variant={"contained"}>提交</Button>
           </Box>
         </Box>
       </Modal>
-      <Modal open={open1} onClose={() => setOpen1(false)}>
-        <Box sx={{ ...style, height: 500, width: '100%', maxWidth:900 }}>
-          <DataGrid
-            columns={columns1}
-            rows={user}
-            localeText={zhCN.components.MuiDataGrid.defaultProps.localeText}
-            checkboxSelection
-            selectionModel={selectionModel}
-            onSelectionModelChange={(e) => {
-              console.log(e)
-              setSelectionModel(e);
-              const selectedIDs = new Set(e);
-              const selectedRows = user.filter((r) => selectedIDs.has(r.id));
-              setSelectedRows(selectedIDs);
-              console.log(selectedRows)
-            }}
-            sx={{
-              width: 800
-            }}
-          />
-          <Button onClick={ev => {
-            const data = user.map(val => {
-              if(selectedRows.has(val.id)){
-                val.selected = 1
-              }else{
-                val.selected = 0
-              }
-              return val
-            })
-            // console.log(data)
-            request.post('/user-exam/update/' + id, data).then(value => {
-              console.log(value.data)
-              setOpen1(false)
-            })
-          }}>确定</Button>
-        </Box>
-      </Modal>
-      <Modal open={open2} onClose={() => setOpen2(false)}>
-        <Box sx={{ ...style, height: 500, width: '100%', maxWidth: 900 }}>
-          <DataGrid
-            columns={columns2}
-            rows={problem}
-            localeText={zhCN.components.MuiDataGrid.defaultProps.localeText}
-            checkboxSelection
-            selectionModel={selectionPModel}
-            onSelectionModelChange={(e) => {
-              setSelectionPModel(e);
-              const selectedIDs = new Set(e);
-              const selectedRows = problem.filter((r) => selectedIDs.has(r.id));
-              setSelectedRows(selectedIDs);
-              console.log(selectedRows)
-            }}
-            sx={{
-              width: 800
-            }}
-          />
-          <Button onClick={ev => {
-            const data = problem.map(val => {
-              if (selectedRows.has(val.id)) {
-                val.selected = 1
-              } else {
-                val.selected = 0
-              }
-              return val
-            })
-            console.log(data)
-            request.post('/exam-problem/update/'+id, data).then(value => {
-              console.log(value.data)
-              setOpen2(false)
-            })
-          }}>确定</Button>
-        </Box>
-      </Modal>
-      <Button
-        onClick={event => {
-          setOpen(true)
-        }}
-      >
-        创建考试
-      </Button>
-      <List>
-        {list.map((val, index) => (
-          <ListItem key={index}>
-            {val.name}
-            <Button onClick={ev => {
-              setOpen1(true)
-              setId(val.id)
-              request.get('/user/list_exam/' + val.id).then(value => {
-                const t = value.data.map((val1) => {
-                  if (val1.selected == 0)
-                    val1.isSelected = false;
-                  else val1.isSelected = true;
-                  return val1
-                }
-                );
-                setSelectionModel(() =>
-                  value.data.filter((r) => r.selected == 1).map((r) => r.id))
-                setUser(t)
-                // console.log(value.data)
-              })
-            }}>选择用户</Button>
-            <Button onClick={ev => {
-              setOpen2(true)
-              setId(val.id)
-              request.get('/problem/list_exam/'+val.id).then(value => {
-                const t = value.data.map(val1 => {
-                  if (val1.selected == 0)
-                    val1.isSelected = false;
-                  else val1.isSelected = true;
-                  return val1
-                }
-                )
-                setSelectionPModel(() =>
-                  value.data.filter((r) => r.selected == 1).map((r) => r.id))
-                setProblem(t)
-              })
-            }}>选择题目</Button>
-          </ListItem>
-        ))}
-      </List>
+      {/*<Modal open={open1} onClose={() => setOpen1(false)}>*/}
+      {/*  <Box sx={{ ...style, height: 500, width: '100%', maxWidth:900 }}>*/}
+      {/*    <DataGrid*/}
+      {/*      columns={columns1}*/}
+      {/*      rows={user}*/}
+      {/*      localeText={zhCN.components.MuiDataGrid.defaultProps.localeText}*/}
+      {/*      checkboxSelection*/}
+      {/*      selectionModel={selectionModel}*/}
+      {/*      onSelectionModelChange={(e) => {*/}
+      {/*        console.log(e)*/}
+      {/*        setSelectionModel(e);*/}
+      {/*        const selectedIDs = new Set(e);*/}
+      {/*        const selectedRows = user.filter((r) => selectedIDs.has(r.id));*/}
+      {/*        setSelectedRows(selectedIDs);*/}
+      {/*        console.log(selectedRows)*/}
+      {/*      }}*/}
+      {/*      sx={{*/}
+      {/*        width: 800*/}
+      {/*      }}*/}
+      {/*    />*/}
+      {/*    <Button onClick={ev => {*/}
+      {/*      const data = user.map(val => {*/}
+      {/*        if(selectedRows.has(val.id)){*/}
+      {/*          val.selected = 1*/}
+      {/*        }else{*/}
+      {/*          val.selected = 0*/}
+      {/*        }*/}
+      {/*        return val*/}
+      {/*      })*/}
+      {/*      // console.log(data)*/}
+      {/*      request.post('/user-exam/update/' + id, data).then(value => {*/}
+      {/*        console.log(value.data)*/}
+      {/*        setOpen1(false)*/}
+      {/*      })*/}
+      {/*    }}>确定</Button>*/}
+      {/*  </Box>*/}
+      {/*</Modal>*/}
+      {/*<Modal open={open2} onClose={() => setOpen2(false)}>*/}
+      {/*  <Box sx={{ ...style, height: 500, width: '100%', maxWidth: 900 }}>*/}
+      {/*    <DataGrid*/}
+      {/*      columns={columns2}*/}
+      {/*      rows={problem}*/}
+      {/*      localeText={zhCN.components.MuiDataGrid.defaultProps.localeText}*/}
+      {/*      checkboxSelection*/}
+      {/*      selectionModel={selectionPModel}*/}
+      {/*      onSelectionModelChange={(e) => {*/}
+      {/*        setSelectionPModel(e);*/}
+      {/*        const selectedIDs = new Set(e);*/}
+      {/*        const selectedRows = problem.filter((r) => selectedIDs.has(r.id));*/}
+      {/*        setSelectedRows(selectedIDs);*/}
+      {/*        console.log(selectedRows)*/}
+      {/*      }}*/}
+      {/*      sx={{*/}
+      {/*        width: 800*/}
+      {/*      }}*/}
+      {/*    />*/}
+      {/*    <Button onClick={ev => {*/}
+      {/*      const data = problem.map(val => {*/}
+      {/*        if (selectedRows.has(val.id)) {*/}
+      {/*          val.selected = 1*/}
+      {/*        } else {*/}
+      {/*          val.selected = 0*/}
+      {/*        }*/}
+      {/*        return val*/}
+      {/*      })*/}
+      {/*      console.log(data)*/}
+      {/*      request.post('/exam-problem/update/'+id, data).then(value => {*/}
+      {/*        console.log(value.data)*/}
+      {/*        setOpen2(false)*/}
+      {/*      })*/}
+      {/*    }}>确定</Button>*/}
+      {/*  </Box>*/}
+      {/*</Modal>*/}
+      <Box sx={{ height: 550, width: '100%', m: 0 }}>
+        <DataGrid
+          rows={list}
+          columns={columns}
+          editMode={'row'}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 10,
+              },
+            },
+          }}
+          pageSizeOptions={[10]}
+          localeText={zhCN.components.MuiDataGrid.defaultProps.localeText}
+          checkboxSelection={true}
+          slots={{
+            toolbar: EditToolbar,
+          }}
+          onCellDoubleClick={params => {
+            console.log(params.row);
+            setName(params.row.name)
+            setTotalTime(params.row.totalTime)
+            setRepositoryId(params.row.repositoryId)
+            setId(params.row.id)
+            setOpen(true);
+          }}
+          onRowSelectionModelChange={(par, a) => {
+            setSelected(par)
+          }}
+          slotProps={{
+            toolbar: { createExam, handleDelete },
+          }}
+        />
+      </Box>
+      {/*<List>*/}
+      {/*  {list.map((val, index) => (*/}
+      {/*    <ListItem key={index}>*/}
+      {/*      {val.name}*/}
+            {/*<Button onClick={ev => {*/}
+            {/*  setOpen1(true)*/}
+            {/*  setId(val.id)*/}
+            {/*  request.get('/user/list_exam/' + val.id).then(value => {*/}
+            {/*    const t = value.data.map((val1) => {*/}
+            {/*      if (val1.selected == 0)*/}
+            {/*        val1.isSelected = false;*/}
+            {/*      else val1.isSelected = true;*/}
+            {/*      return val1*/}
+            {/*    }*/}
+            {/*    );*/}
+            {/*    setSelectionModel(() =>*/}
+            {/*      value.data.filter((r) => r.selected == 1).map((r) => r.id))*/}
+            {/*    setUser(t)*/}
+            {/*    // console.log(value.data)*/}
+            {/*  })*/}
+            {/*}}>选择用户</Button>*/}
+            {/*<Button onClick={ev => {*/}
+            {/*  setOpen2(true)*/}
+            {/*  setId(val.id)*/}
+            {/*  request.get('/problem/list_exam/'+val.id).then(value => {*/}
+            {/*    const t = value.data.map(val1 => {*/}
+            {/*      if (val1.selected == 0)*/}
+            {/*        val1.isSelected = false;*/}
+            {/*      else val1.isSelected = true;*/}
+            {/*      return val1*/}
+            {/*    }*/}
+            {/*    )*/}
+            {/*    setSelectionPModel(() =>*/}
+            {/*      value.data.filter((r) => r.selected == 1).map((r) => r.id))*/}
+            {/*    setProblem(t)*/}
+            {/*  })*/}
+            {/*}}>选择题目</Button>*/}
+      {/*    </ListItem>*/}
+      {/*  ))}*/}
+      {/*</List>*/}
     </>
   )
 };

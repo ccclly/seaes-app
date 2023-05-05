@@ -2,8 +2,8 @@ import { DataGrid, GridToolbarContainer, zhCN } from '@mui/x-data-grid';
 import {
   Autocomplete,
   Box,
-  Button,
-  Modal,
+  Button, FormControl, FormControlLabel, Input, InputLabel, MenuItem,
+  Modal, Radio, RadioGroup, Select,
   TextField,
   Typography,
 } from '@mui/material';
@@ -11,6 +11,7 @@ import { Check, Save } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import request from '@/Util/request';
 import AddIcon from '@mui/icons-material/Add';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 
 const columns = [
@@ -19,13 +20,13 @@ const columns = [
     field: 'name',
     headerName: '用户名',
     width: 120,
-    editable: true,
+
 
   },
   {
     field: 'user_type',
     headerName: '用户类型',
-    editable: true,
+
     valueGetter: (param) => {
       if (param.row.userType == 0) {
         return '普通用户';
@@ -39,19 +40,19 @@ const columns = [
     field: 'grade',
     headerName: '年级',
     width: 100,
-    editable: true,
+
   },
   {
     field: 'college',
     headerName: '学院',
     width: 210,
-    editable: true,
+
   },
   {
     field: 'major',
     headerName: '班级',
     sortable: false,
-    editable: true,
+
     width: 160,
   },
   // {
@@ -89,7 +90,7 @@ const rows = [
 
 function EditToolbar(props) {
   // const { setRows, setRowModesModel, rows } = props;
-  const { createUser } = props;
+  const { createUser, handleDelete } = props;
   //
   // const handleClick = () => {
   //   const id = rows.length + 1;
@@ -104,6 +105,9 @@ function EditToolbar(props) {
     <GridToolbarContainer>
       <Button color="primary" startIcon={<AddIcon />} onClick={createUser}>
         新建用户
+      </Button>
+      <Button color={'error'} startIcon={<DeleteOutlineIcon />} onClick={handleDelete}>
+        删除用户
       </Button>
     </GridToolbarContainer>
   );
@@ -130,7 +134,13 @@ export default function (){
   const [open, setOpen] = useState(false);
   const [collegeValue, setCollegeValue] = useState('');
   const [userType, setUserType] = useState('');
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+  const [grade, setGrade] = useState('');
+  const [major, setMajor] = useState('');
   const [rows, setRows] = useState([]);
+  const [id, setId] = useState('');
+  const [selected, setSelected] = useState([]);
   let handleEditCellChange = (e) => {
     console.log(e)
   };
@@ -142,6 +152,11 @@ export default function (){
 
 
   const createUser = (e) => {
+    setName('')
+    setPassword('')
+    setGrade('')
+    setMajor('')
+    setCollegeValue('')
     setOpen(true)
   }
   const handleCreate = (event) => {
@@ -164,13 +179,21 @@ export default function (){
       grade: data.get('grade'),
       college: collegeValue,
       major: data.get('major'),
-      userType: typeN
+      userType: typeN,
+      id: id
     }).then(value => {
       setRows(value.data)
     });
     setCollegeValue('');
     setUserType('')
     setOpen(false);
+  }
+  const handleDelete = () => {
+    selected.forEach(value => {
+      request.post('/user/delete', {
+        id: value
+      }).then(value1 => setRows(value1.data))
+    })
   }
   return(
     <>
@@ -201,6 +224,7 @@ export default function (){
               name="name"
               size={'small'}
               sx={{ width: 300 }}
+              defaultValue={name}
             />
             <TextField
               label={'密码'}
@@ -208,6 +232,7 @@ export default function (){
               name={'password'}
               size={'small'}
               sx={{ width: 300 }}
+              defaultValue={password}
             />
             <TextField
               label={'年级'}
@@ -216,40 +241,41 @@ export default function (){
               name={'grade'}
               sx={{ width: 300 }}
               size={'small'}
+              defaultValue={grade}
             />
-            <Autocomplete
-              freeSolo
-              disablePortal
-              id="college"
-              name={'college'}
-              options={[{label: '信息科学与工程学院'}, {label: '材料科学与工程学院'}]}
-              sx={{ width: 300 }}
-              inputValue={collegeValue}
-              onInputChange={(event, newInputValue) => {
-                setCollegeValue(newInputValue);
-              }}
-              renderInput={(params) => <TextField {...params} label="学院" />}
-              size={'small'}
-            />
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">学院</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={collegeValue}
+                label="学院"
+                onChange={ev => setCollegeValue(ev.target.value)}
+                size={'small'}
+                sx={{width: 300}}
+              >
+                <MenuItem value={'信息科学与工程学院'}>信息科学与工程学院</MenuItem>
+                <MenuItem value={'材料科学与工程学院'}>材料科学与工程学院</MenuItem>
+                <MenuItem value={30}>Thirty</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               label={'班级'}
               id="major"
               name={'major'}
               sx={{ width: 300 }}
               size={'small'}
+              defaultValue={major}
             />
-            <Autocomplete
-              disablePortal
-              id="user_type"
-              options={[{label: '普通用户'}, {label: '教师'}, {label: '管理员'}]}
-              inputValue={userType}
-              onInputChange={(event, newInputValue) => {
-                setUserType(newInputValue);
+            <RadioGroup
+              value={userType}
+              onChange={event => {
+                setUserType(event.target.value)
               }}
-              sx={{ width: 300 }}
-              renderInput={(params) => <TextField {...params} label="用户类型" />}
-              size={'small'}
-            />
+            >
+              <FormControlLabel value="0" control={<Radio />} label="普通用户" />
+              <FormControlLabel value="1" control={<Radio />} label="管理员" />
+            </RadioGroup>
             <Button
               type="submit"
               fullWidth
@@ -259,12 +285,11 @@ export default function (){
                 width: 300
               }}
             >
-              创建
+              提交
             </Button>
           </Box>
         </Box>
       </Modal>
-      <Button variant={'contained'} onClick={createUser}>添加新用户</Button>
       <Box sx={{ height: 500, width: '100%' }}>
         <DataGrid
           rows={rows}
@@ -276,21 +301,30 @@ export default function (){
               },
             },
           }}
+          checkboxSelection={true}
           pageSizeOptions={[10]}
-          onCellEditStop={params => {
-            console.log(params)
+          onCellDoubleClick={params => {
+            setName(params.row.name)
+            setPassword(params.row.password)
+            setCollegeValue(params.row.college)
+            setMajor(params.row.major)
+            setUserType(params.row.userType)
+            setGrade(params.row.grade)
+            setId(params.row.id)
+            setOpen(true)
           }}
-          onCellEditCommit={params => {
-            console.log(params)
+          onRowSelectionModelChange={(par, a) => {
+            console.log(par)
+            setSelected(par)
           }}
           localeText={zhCN.components.MuiDataGrid.defaultProps.localeText}
           slots={{
             toolbar: EditToolbar
           }}
           slotProps={{
-            toolbar: { createUser}
+            toolbar: { createUser, handleDelete}
           }}
-        />
+         />
       </Box>
     </>
   )
