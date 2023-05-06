@@ -1,4 +1,4 @@
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, useEffect } from 'react';
 import {
   Box,
   Button, CardMedia, Grid, Input, ListItem, ListItemButton, Modal, Paper,
@@ -17,6 +17,9 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import List from '@mui/material/List';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import { DataGrid, GridToolbarContainer, zhCN } from '@mui/x-data-grid';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 const Accordion = styled((props) => (
     <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -58,7 +61,8 @@ const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-function Step1 ({ step1, setStep1 }) {
+function Step1 ({ step1, setStep1, id }) {
+
 
   return (
     <Box sx={{
@@ -112,7 +116,7 @@ const style = {
   justifyContent: 'center',
   alignItems: 'center',
 };
-function Step2 ({chapter, setChapter, lesson, setLesson}) {
+function Step2 ({chapter, setChapter, lesson, setLesson, id}) {
 
   const [open, setOpen] = useState(false);
   const [type, setType] = useState('');
@@ -182,7 +186,8 @@ function Step2 ({chapter, setChapter, lesson, setLesson}) {
         </Box>
       </Modal>
       <Button sx={{mb: 1}} variant={'contained'} onClick={()=> {setType('chapter');setOpen(true);}}>新建章节</Button>
-      <Button onClick={()=>{console.log(JSON.stringify(chapter), JSON.stringify(lesson))}}>查看</Button>
+      <Button onClick={()=>{console.log(chapter, lesson)}}>查看</Button>
+
       {chapter.length>0&&<Grid sx={{ width: '100%' }}>
         {chapter.map((val, index) => {
           return (<Paper key={val.name} sx={{mb: 1}}>
@@ -193,12 +198,12 @@ function Step2 ({chapter, setChapter, lesson, setLesson}) {
             <Grid>
               <Grid container>
                 <Grid item xs={2} display={'flex'} alignItems={'center'} justifyContent={'center'} height={'68px'}>
-                  <Button variant={'contained'} onClick={()=>createLesson(index)}>创建小节</Button>
+                  <Button variant={'contained'} onClick={()=>createLesson(id?index+1:index)}>创建小节</Button>
                 </Grid>
                 <Grid item xs={10}>
                   <List>
                     {lesson.map((val1, index1) => {
-                      if(val1.chapterId === index)
+                      if(!id?(val1.chapterId === index):(val1.chapterId === val.id))
                         return (<>
                         <ListItem key={val1.name} divider sx={{ display: 'flex' }}>
                           <Typography sx={{ flex: 1 }}>
@@ -312,7 +317,7 @@ function Step3 ({step1, chapter, lesson}) {
   );
 }
 
-function Steps ({ setCreate }) {
+function Steps ({ setCreate, name, description, id, imgN }) {
   const steps = ['步骤 1', '步骤 2', '步骤 3'];
   const [activeStep, setActiveStep] = useState(0);
   const [step1, setStep1] = useState({
@@ -323,11 +328,26 @@ function Steps ({ setCreate }) {
   const [chapter, setChapter] = useState([]);
   const [lesson, setLesson] = useState([]);
 
+  useEffect(()=>{
+    if (id) {
+      request.get('/course/' + id).then(value => {
+        const s1 = {
+          input1: value.data.name,
+          input2: value.data.description,
+          input3: value.data.imgName
+        }
+        setStep1(s1);
+        setChapter(value.data.chapterList)
+        setLesson(value.data.lessonList)
+      });
+    }
+  }, [])
+
   const fn = () => {
     if (activeStep === 0) {
       return <Step1 step1={step1} setStep1={setStep1}/>;
     } else if (activeStep === 1) {
-      return <Step2 chapter={chapter} setChapter={setChapter} lesson={lesson} setLesson={setLesson}/>;
+      return <Step2 chapter={chapter} setChapter={setChapter} lesson={lesson} setLesson={setLesson} id={id}/>;
     } else if (activeStep === 2) {
       return <Step3 step1={step1} chapter={chapter} lesson={lesson}/>;
     }
@@ -379,6 +399,10 @@ function Steps ({ setCreate }) {
           variant={'contained'} onClick={handleNext}>{activeStep !== 2
           ? '下一步'
           : '完成'}</Button>
+        <Button sx={{
+          height: 40,
+          width: 80,
+        }} color={'error'} onClick={()=>setCreate(false)}>取消</Button>
       </Grid>
       {fn()}
     </>
@@ -448,9 +472,52 @@ const FileUpload = ({setStep1, op, op2}) => {
     </Box>);
 };
 
+function EditToolbar (props) {
+  const { createExam, handleDelete } = props;
+
+  return (
+    <GridToolbarContainer>
+      <Button color="primary" startIcon={<AddIcon/>} onClick={createExam}>
+        新建考试
+      </Button>
+      <Button color={'error'} startIcon={<DeleteOutlineIcon/>} onClick={handleDelete}>
+        删除考试
+      </Button>
+    </GridToolbarContainer>
+  );
+}
+
 export default function () {
 
   const [create, setCreate] = useState(false);
+  const [list, setList] = useState([]);
+  const [selected, setSelected] = useState([]);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [imageN, setImageN] = useState('');
+  const [id, setId] = useState('');
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    request.get('/course/list').then(value => {
+      setList(value.data)
+    })
+  }, []);
+
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 60 },
+    {
+      field: 'name',
+      headerName: '课程名称',
+      width: 320,
+    },
+    {
+      field: 'description',
+      headerName: '课程描述',
+      width: 500
+    },
+  ]
+
 
   const createCourse = () => {
     setCreate(true);
@@ -471,7 +538,43 @@ export default function () {
       {/*<FileUpload/>*/}
       {!create &&
         <Button variant={'contained'} onClick={createCourse}>创建课程</Button>}
-      {create && <Steps setCreate={setCreate}/>}
+      {create && <Steps setCreate={setCreate} name={name} description={description} imgN={imageN} id={id}/>}
+      {!create&&
+        <Box sx={{ height: 550, width: '100%', m: 0 }}>
+          <DataGrid
+            rows={list}
+            columns={columns}
+            editMode={'row'}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 10,
+                },
+              },
+            }}
+            pageSizeOptions={[10]}
+            localeText={zhCN.components.MuiDataGrid.defaultProps.localeText}
+            checkboxSelection={true}
+            slots={{
+              toolbar: EditToolbar,
+            }}
+            onCellDoubleClick={params => {
+              console.log(params.row);
+              setName(params.row.name)
+              setDescription(params.row.description)
+              setImageN(params.row.imgName);
+              setId(params.row.id)
+              setCreate(true)
+            }}
+            onRowSelectionModelChange={(par, a) => {
+              setSelected(par)
+            }}
+            slotProps={{
+              toolbar: {},
+            }}
+          />
+        </Box>
+      }
     </>
   );
 }

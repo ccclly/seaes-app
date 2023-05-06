@@ -185,6 +185,7 @@ export default function () {
   const [repository, setRepository] = useState([]);
   const [selected, setSelected] = useState([]);
   const [name, setName] = useState('');
+  const [count, setCount] = useState(0);
   const [totalTime, setTotalTime] = useState(0);
   const [repositoryId, setRepositoryId] = useState('');
 
@@ -195,6 +196,7 @@ export default function () {
       name: data.get('name'),
       totalTime: data.get('time'),
       repositoryId: data.get('repositoryId'),
+      count: data.get('count'),
       id: id
     }).then(value => {
       setList(value.data)
@@ -208,7 +210,8 @@ export default function () {
   }
   const createExam = () => {
     setName('')
-    setTotalTime(0)
+    setTotalTime(null)
+    setCount(null);
     setRepositoryId('')
     setId(null)
     setOpen(true)
@@ -241,6 +244,11 @@ export default function () {
       field: 'totalTime',
       headerName: '考试时长',
       width: 200
+    },
+    {
+      field: 'count',
+      headerName: '题目数量',
+      width: 100
     },
     {
       field: 'repositoryId',
@@ -291,6 +299,14 @@ export default function () {
               size={'small'}
               sx={{ width: 400 }}
               defaultValue={totalTime}
+            />
+            <TextField
+              label={'考试时长'}
+              id={'count'}
+              name="count"
+              size={'small'}
+              sx={{ width: 400 }}
+              defaultValue={count}
             />
             <FormControl>
               <InputLabel id="demo-simple-select-label">选择题库</InputLabel>
@@ -409,6 +425,7 @@ export default function () {
             setTotalTime(params.row.totalTime)
             setRepositoryId(params.row.repositoryId)
             setId(params.row.id)
+            setCount(params.row.count)
             setOpen(true);
           }}
           onRowSelectionModelChange={(par, a) => {

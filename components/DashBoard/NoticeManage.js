@@ -1,9 +1,39 @@
-import { Box, Button, Grid, List, ListItem, Modal, Paper, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Grid,
+  List,
+  ListItem,
+  Modal,
+  Paper,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import React, { useCallback, useMemo } from 'react';
 import RichText from '../RichText';
 import request from '@/Util/request';
+import { DataGrid, GridToolbarContainer, zhCN } from '@mui/x-data-grid';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+
+function EditToolbar (props) {
+  const { createExam, handleDelete } = props;
+
+  return (
+    <GridToolbarContainer>
+      <Button color="primary" startIcon={<AddIcon/>} onClick={createExam}>
+        新建内容
+      </Button>
+      <Button color={'error'} startIcon={<DeleteOutlineIcon/>} onClick={handleDelete}>
+        删除内容
+      </Button>
+    </GridToolbarContainer>
+  );
+}
+
 
 export default () => {
 
@@ -74,36 +104,42 @@ export default () => {
 
       <Grid container spacing={2}>
         <Grid xs={6} item>
-          <Paper elevation={2}  sx={{
-            height: 300
-          }}>
-            <Typography>
-              通知公告列表
-            </Typography>
-            <List>
-              {notice.map(value => (
-                <Box display={'flex'}>
-                  <ListItem button onClick={ev => {
-                    setType('notice')
-                    setTitle(value.title)
-                    setState(value.description)
-                    setOpen(true)
-                    setUpdate(value.id)
-                  }}>
-                    <Typography noWrap={true} sx={{
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap',
-                      textOrientation: 'ellipsis',
-                      width: 440
-                    }}>
-                      {value.title}
-                    </Typography>
-                  </ListItem>
-                  <Button>删除</Button>
-                </Box>
-              ))}
-            </List>
-          </Paper>
+          <Box sx={{ height: 300, width: '100%', m: 0 }}>
+            <DataGrid
+              rows={notice}
+              columns={[
+                { field: 'id', headerName: 'ID', width: 60 },
+                {
+                  field: 'title',
+                  headerName: '标题',
+                  width: 420,
+                }
+              ]}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 10,
+                  },
+                },
+              }}
+              checkboxSelection={true}
+              pageSizeOptions={[10]}
+              localeText={zhCN.components.MuiDataGrid.defaultProps.localeText}
+              slots={{
+                toolbar: EditToolbar,
+              }}
+              onCellDoubleClick={params => {
+                setType('rule')
+                setTitle(params.row.title)
+                setState(params.row.description)
+                setOpen(true)
+                setUpdate(params.row.id)
+              }}
+              slotProps={{
+                toolbar: {},
+              }}
+            />
+          </Box>
         </Grid>
         <Grid xs={6} item>
           <Paper elevation={2} sx={{
@@ -138,14 +174,15 @@ export default () => {
           </Paper>
         </Grid>
       </Grid>
-
+      <ButtonGroup variant="contained" aria-label="outlined primary button group">
       <Button variant={'contained'} onClick={createNotice}>
         发布通知公告
       </Button>
       <Button variant={'contained'} onClick={createRule}>
         发布规章制度
       </Button>
-      <Button onClick={()=>setOpen(false)}>取消</Button>
+      </ButtonGroup>
+      {open&&<Button color={'error'} onClick={() => setOpen(false)}>取消</Button>}
       {open && <Box>
         <Typography id="modal-modal-title" variant="h6" component="h2">
           创建新{type === 'notice' ? '通知消息' : '规章制度'}
