@@ -301,7 +301,7 @@ export default function () {
               defaultValue={totalTime}
             />
             <TextField
-              label={'考试时长'}
+              label={'题目数量'}
               id={'count'}
               name="count"
               size={'small'}

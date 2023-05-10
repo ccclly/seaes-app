@@ -317,7 +317,7 @@ function Step3 ({step1, chapter, lesson}) {
   );
 }
 
-function Steps ({ setCreate, name, description, id, imgN }) {
+function Steps ({ setCreate, name, description, id, imgN, setList }) {
   const steps = ['步骤 1', '步骤 2', '步骤 3'];
   const [activeStep, setActiveStep] = useState(0);
   const [step1, setStep1] = useState({
@@ -355,6 +355,9 @@ function Steps ({ setCreate, name, description, id, imgN }) {
 
   const handleNext = () => {
     if (activeStep === 2) {
+      request.get('/course/list').then(value => {
+        setList(value.data)
+      })
       setActiveStep(0);
       setCreate(false);
       return;
@@ -473,15 +476,15 @@ const FileUpload = ({setStep1, op, op2}) => {
 };
 
 function EditToolbar (props) {
-  const { createExam, handleDelete } = props;
+  const { createCourse, handleDelete } = props;
 
   return (
     <GridToolbarContainer>
-      <Button color="primary" startIcon={<AddIcon/>} onClick={createExam}>
-        新建考试
+      <Button color="primary" startIcon={<AddIcon/>} onClick={createCourse}>
+        新建课程
       </Button>
       <Button color={'error'} startIcon={<DeleteOutlineIcon/>} onClick={handleDelete}>
-        删除考试
+        删除课程
       </Button>
     </GridToolbarContainer>
   );
@@ -536,9 +539,7 @@ export default function () {
       {/*  />*/}
       {/*</Button>*/}
       {/*<FileUpload/>*/}
-      {!create &&
-        <Button variant={'contained'} onClick={createCourse}>创建课程</Button>}
-      {create && <Steps setCreate={setCreate} name={name} description={description} imgN={imageN} id={id}/>}
+      {create && <Steps setList={setList} setCreate={setCreate} name={name} description={description} imgN={imageN} id={id}/>}
       {!create&&
         <Box sx={{ height: 550, width: '100%', m: 0 }}>
           <DataGrid
@@ -570,7 +571,7 @@ export default function () {
               setSelected(par)
             }}
             slotProps={{
-              toolbar: {},
+              toolbar: {createCourse},
             }}
           />
         </Box>

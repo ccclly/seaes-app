@@ -21,7 +21,7 @@ export default function () {
     console.log(info)
     if(info){
       setLogin(true)
-      request1.get('/exam/e/'+info.id).then(value => {
+      request1.get('/exam/list').then(value => {
         setExamList(value.data)
       })}
   }, [])

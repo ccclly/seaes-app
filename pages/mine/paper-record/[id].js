@@ -12,7 +12,7 @@ import {
   Container,
   FormControl,
   Sheet, Typography,
-  Button, Card, CircularProgress, LinearProgress,
+  Button, Card, CircularProgress,
 } from '@mui/joy';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -67,7 +67,6 @@ const SCQuestions = ({ state, setState, index, data, finish, fillAns }) => {
               value={item.id}
               label={item.name}
               disabled={finish}
-
               sx={{ flexGrow: 1, flexDirection: 'row-reverse' }}
               slotProps={{
                 action: ({ checked }) => ({
@@ -175,25 +174,35 @@ const MCQuestions = ({ state, setState, index: p_index, data, finish, fillAns })
                   fillAns(data.id, [...n])
                   return n;
                 })
-                // setGroup(new Map(group).set(index, event.target.checked));
+                // console.log(index);
                 // setState(new Map(state).set(p_index,
                 //   new Map(group).set(index, event.target.checked)));
               }
+
             }}
           />
         </Sheet>
-
       ))}
     </FormGroup>
+    {
+      finish&&<Box>
+        <Typography>
+          正确答案：{data.choiceIsTrue[0]&&'A'} {data.choiceIsTrue[1]&&'B'} {data.choiceIsTrue[2]&&'C'} {data.choiceIsTrue[3]&&'D'}
+        </Typography>
+        <Typography>
+          解析： {data.analysisDesc}
+        </Typography>
+      </Box>
+    }
   </>);
 };
 const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
-
   let defaultV = null
   data.paperQAS.forEach(value => {
     if (value.checked) {defaultV = value.answerId}
   })
   return (
+    <>
     <RadioGroup aria-label="Your plan" name="people"
                 onChange={event => {
                   // !finish&&setState(
@@ -202,6 +211,7 @@ const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
                 }}
                 disabled={finish}
                 defaultValue={defaultV}
+
     >
       <List
         sx={{
@@ -221,12 +231,12 @@ const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
             key={item.name}
             sx={{ boxShadow: 'sm', bgcolor: 'background.body' }}
           >
-            <ListItemDecorator>
+            {/*<ListItemDecorator>*/}
 
-              {[
-                <CheckCircleOutlineIcon/>,
-                <HighlightOffIcon/>][index]}
-            </ListItemDecorator>
+              {/*{[*/}
+              {/*  <CheckCircleOutlineIcon/>,*/}
+              {/*  <HighlightOffIcon/>][index]}*/}
+            {/*</ListItemDecorator>*/}
             <Radio
               overlay
               value={item.id}
@@ -258,13 +268,24 @@ const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
         ))}
       </List>
     </RadioGroup>
+      {
+        finish&&<Box>
+          <Typography>
+            正确答案：{data.choiceIsTrue[0]&&'正确'} {data.choiceIsTrue[1]&&'错误'}
+          </Typography>
+          <Typography>
+            解析： {data.analysisDesc}
+          </Typography>
+        </Box>
+      }
+    </>
   );
 };
 
 export default function () {
   const router = useRouter();
   const { id } = router.query;
-  const [finish, setFinish] = useState(false);
+  const [finish, setFinish] = useState(true);
   const [qList, setQList] = useState([]);
   const [paperId, setPaperId] = useState(0);
   const [score, setScore] = useState(null);
@@ -278,40 +299,37 @@ export default function () {
   }
 
   useEffect(() => {
+    console.log(id)
     if (!!id) {
-      const url = '/paper/create';
-      const info = JSON.parse(localStorage.getItem('loginInfo'))
-      request1.post(url, {
-        userId: info.id,
-        examId: id
-      }).then(value => {
-        console.log(value.data);
-        setPaperId(value.data.paper.id)
-        const data = value.data.quList.map((val, index) => {
-          const t = {};
-          t.desc = val.name;
-          const s = value.data.paperQAs[index].map(val => val.answerId)
-          t.choice = value.data.quansList[index].sort((a,b)=>{
-            return s.indexOf(a.id) - s.indexOf(b.id)
-          })
-          // t.choice = value.data.quansList[index];
-          t.paperQAS = value.data.paperQAs[index]
-          t.choiceIsTrue =[
-            value.data.paperQAs[index][0].isRight,
-            value.data.paperQAs[index][1].isRight,
-            value.data.paperQAs[index][2]?.isRight,
-            value.data.paperQAs[index][3]?.isRight,
-          ];
-          t.analysisDesc = val.analysisDesc
-          t.type = val.type;
-          t.id = val.id;
-          return t;
+      const url = '/paper/de/' + id;
+        request1.get(url).then((value) => {
+          console.log(value.data);
+          setPaperId(value.data.paper.id)
+          setScore(value.data.paper.userScore)
+          const data = value.data.quList.map((val, index) => {
+            const t = {};
+            t.desc = val.name;
+            const s = value.data.paperQAs[index].map(val => val.answerId)
+            t.choice = value.data.quansList[index].sort((a,b)=>{
+              return s.indexOf(a.id) - s.indexOf(b.id)
+            })
+            // t.choice = value.data.quansList[index];
+            t.paperQAS = value.data.paperQAs[index]
+            t.choiceIsTrue =[
+              value.data.paperQAs[index][0].isRight,
+              value.data.paperQAs[index][1].isRight,
+              value.data.paperQAs[index][2]?.isRight,
+              value.data.paperQAs[index][3]?.isRight,
+            ];
+            t.analysisDesc = val.analysisDesc
+            t.type = val.type;
+            t.id = val.id;
+            return t;
+          });
+          console.log(data);
+          setQList(data);
         });
-        console.log(data);
-        setQList(data);
-      });
     }
-
   }, [id]);
 
 
@@ -323,11 +341,6 @@ export default function () {
   }, [state]);
 
   const handleSubmit = (ev) => {
-    setFinish(true);
-    request1('/paper/submit/' + paperId).then(value => {
-      console.log(value.data)
-      setScore(value.data)
-    })
     // const data = qList.map((value, index) => {
     //   let obj = {
     //     choiceAIsTrue: false,
@@ -357,22 +370,23 @@ export default function () {
     //     if (m.get(2)) obj.choiceCIsTrue = true;
     //     if (m.get(3)) obj.choiceDIsTrue = true;
     //   }
-    //   obj.examId = id;
-    //   obj.problemId = value.id;
+    //
+    //
     //   return obj;
     // });
     // console.log(data);
-    // request1.post('/user-exam-option/save', data).then(value => {
-    //   console.log(value.data);
-    //   setFinish(true);
-    // });
-
+    setFinish(true)
+    // request1('/paper/submit/' + paperId).then(value => {
+    //   console.log(value.data)
+    //   setScore(value.data)
+    // })
   };
 
   return (
     <StyledEngineProvider injectFirst>
       <CssVarsProvider>
         <Container>
+          {score==null&&<CircularProgress sx={{position: 'absolute', left: '50%', top: '350%'}}/>}
           <Box
             sx={{
               '.css-1bb01ub-JoyRadio-root.Joy-disabled, .css-1xxdwh2-JoyCheckbox-root.Joy-disabled, ': { color: '#25252d' },
@@ -381,56 +395,50 @@ export default function () {
               '.css-dzmv7r-JoyRadio-radio.Joy-disabled': { color: '#3990FF' },
             }}
           >
-            {qList.length<=0&&<CircularProgress sx={{
-              position: 'fix',
+              {qList.map((value, index) => {
+                if (value.type == 0) {
+                  return <SCQuestions finish={finish} key={index} index={index} state={state}
+                                      setState={setState} data={qList[index]} fillAns={fillAns}/>;
+                } else if (value.type == 1) {
+                  return <MCQuestions finish={finish} key={index} index={index} state={state}
+                                      setState={setState} fillAns={fillAns}
+                                      data={qList[index]}/>;
+                } else {
+                  return <TOFQuestions finish={finish} key={index} index={index} state={state} setState={setState}
+                                       data={qList[index]} fillAns={fillAns}/>;
+                }
+              })}
+              {(qList.length > 0&&!finish) && <Button sx={{
+                width: '100%',
+                mt: 3,
+                mb: 3
+              }} onClick={handleSubmit}>提交</Button>}
+          {score!=null&&(
+            <Card variant="outlined" sx={{
+              maxWidth: 400,
+              position: 'relative',
               left: '50%',
-              transform: 'translateX(-50%)',
-              top: 200
-            }}/>}
-            {qList.map((value, index) => {
-              if (value.type == 0) {
-                return <SCQuestions finish={finish} key={index} index={index} state={state}
-                                    setState={setState} data={qList[index]} fillAns={fillAns}/>;
-              } else if (value.type == 1) {
-                return <MCQuestions finish={finish} key={index} index={index} state={state}
-                                    setState={setState} fillAns={fillAns}
-                                    data={qList[index]}/>;
-              } else {
-                return <TOFQuestions finish={finish} key={index} index={index} state={state} setState={setState}
-                                     data={qList[index]} fillAns={fillAns}/>;
-              }
-            })}
-            {(qList.length > 0&&!finish) && <Button sx={{
-              width: '100%',
-              mt: 3,
-              mb: 3
-            }} onClick={handleSubmit}>提交</Button>}
-            {finish&&(
-              <Card variant="outlined" sx={{
-                maxWidth: 400,
-                position: 'relative',
-                left: '50%',
-                transform: 'translateX(-50%)'
-              }}>
-                <Typography level="h2" fontSize="xl" sx={{ mb: 0.5 }}>
-                  您的正确率为：
-                </Typography>
-                <Typography level="h1" color={'primary'}>{score*100}%</Typography>
-              </Card>
-            )}
-            {finish&&
-              <Link href={'/exam'}>
-                <Button
-                  sx={{
-                    width: '100%',
-                    mt: 3,
-                    mb: 3
-                  }}
-                >
-                  返回
-                </Button>
+              transform: 'translateX(-50%)'
+            }}>
+              <Typography level="h2" fontSize="xl" sx={{ mb: 0.5 }}>
+                您的正确率为：
+              </Typography>
+              <Typography level="h1" color={'primary'}>{score*100}%</Typography>
+            </Card>
+          )}
+            {score!=null&&
+              <Link href={'/mine'}>
+              <Button
+              sx={{
+                width: '100%',
+                mt: 3,
+                mb: 3
+              }}
+            >
+                返回
+            </Button>
               </Link>}
-          </Box>
+            </Box>
         </Container>
       </CssVarsProvider>
     </StyledEngineProvider>

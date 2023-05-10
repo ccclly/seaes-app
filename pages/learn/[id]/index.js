@@ -14,7 +14,7 @@ import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import request from '@/Util/request';
+import request1 from '@/Util/request1';
 import url from '@/constant/url';
 
 
@@ -65,7 +65,7 @@ export default function () {
   useEffect(() => {
     if (!!id) {
       const url = '/course/' + id;
-      request.get(url).then(value => {
+      request1.get(url).then(value => {
         setState(value.data);
       });
     }

@@ -28,7 +28,7 @@ function Copyright(props) {
   );
 }
 
-export default function UserLogin({setIsLogin}) {
+export default function UserLogin({setIsLogin, setStatus}) {
 
 
   const handleSubmit = (ev) => {
@@ -40,6 +40,7 @@ export default function UserLogin({setIsLogin}) {
     }).then(value => {
       localStorage.setItem('loginInfo', JSON.stringify(value.data));
       setIsLogin(value.data)
+      setStatus(1)
     })
   }
 

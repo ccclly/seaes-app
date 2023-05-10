@@ -12,7 +12,7 @@ import {
   Container,
   FormControl,
   Sheet, Typography,
-  Button
+  Button, Card, CircularProgress,
 } from '@mui/joy';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -22,9 +22,13 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useRouter } from 'next/router';
 import request1 from '@/Util/request1';
+import Link from 'next/link';
 
 const SCQuestions = ({ state, setState, index, data, finish, fillAns }) => {
-
+  let defaultV = null
+  data.paperQAS.forEach(value => {
+    if (value.checked) {defaultV = value.answerId}
+  })
   return (<>
     <RadioGroup
       // defaultValue="Individual"
@@ -35,6 +39,7 @@ const SCQuestions = ({ state, setState, index, data, finish, fillAns }) => {
         // !finish&&setState(new Map(state).set(index, event.target.value));
       }
       }
+      defaultValue={defaultV}
     >
       <List
         sx={{
@@ -157,6 +162,7 @@ const MCQuestions = ({ state, setState, index: p_index, data, finish, fillAns })
               }),
             }}
             checked={group[index]}
+            defaultChecked={data.paperQAS[index].checked}
             onChange={event => {
               if (!finish) {
                 setGroup(prevState => {
@@ -176,14 +182,27 @@ const MCQuestions = ({ state, setState, index: p_index, data, finish, fillAns })
             }}
           />
         </Sheet>
-
       ))}
     </FormGroup>
+    {
+      finish&&<Box>
+        <Typography>
+          正确答案：{data.choiceIsTrue[0]&&'A'} {data.choiceIsTrue[1]&&'B'} {data.choiceIsTrue[2]&&'C'} {data.choiceIsTrue[3]&&'D'}
+        </Typography>
+        <Typography>
+          解析： {data.analysisDesc}
+        </Typography>
+      </Box>
+    }
   </>);
 };
 const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
-
+  let defaultV = null
+  data.paperQAS.forEach(value => {
+    if (value.checked) {defaultV = value.answerId}
+  })
   return (
+    <>
     <RadioGroup aria-label="Your plan" name="people"
                 onChange={event => {
                   // !finish&&setState(
@@ -191,6 +210,8 @@ const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
                   fillAns(data.id, [event.target.value])
                 }}
                 disabled={finish}
+                defaultValue={defaultV}
+
     >
       <List
         sx={{
@@ -211,7 +232,7 @@ const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
             sx={{ boxShadow: 'sm', bgcolor: 'background.body' }}
           >
             <ListItemDecorator>
-            
+
               {[
                 <CheckCircleOutlineIcon/>,
                 <HighlightOffIcon/>][index]}
@@ -247,6 +268,17 @@ const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
         ))}
       </List>
     </RadioGroup>
+      {
+        finish&&<Box>
+          <Typography>
+            正确答案：{data.choiceIsTrue[0]&&'正确'} {data.choiceIsTrue[1]&&'错误'}
+          </Typography>
+          <Typography>
+            解析： {data.analysisDesc}
+          </Typography>
+        </Box>
+      }
+    </>
   );
 };
 
@@ -256,6 +288,7 @@ export default function () {
   const [finish, setFinish] = useState(false);
   const [qList, setQList] = useState([]);
   const [paperId, setPaperId] = useState(0);
+  const [score, setScore] = useState(null);
 
   const fillAns = (quId, ansId) => {
     request1.post('/paper/fill-answer', {
@@ -268,19 +301,25 @@ export default function () {
   useEffect(() => {
     console.log(num)
     if (!!num) {
-      const url = '/paper/de/7';
-        request1.get(url).then((value) => {
+      const url = '/paper/test/' + num;
+        request1.post(url).then((value) => {
           console.log(value.data);
           setPaperId(value.data.paper.id)
           const data = value.data.quList.map((val, index) => {
             const t = {};
             t.desc = val.name;
-            t.choice = value.data.quansList[index];
+            const s = value.data.paperQAs[index].map(val => val.answerId)
+            t.choice = value.data.quansList[index].sort((a,b)=>{
+              return s.indexOf(a.id) - s.indexOf(b.id)
+            })
+            // t.choice = value.data.quansList[index];
+            t.paperQAS = value.data.paperQAs[index]
+            console.log(val)
             t.choiceIsTrue =[
-              val.choiceAIsTrue,
-              val.choiceBIsTrue,
-              val.choiceCIsTrue,
-              val.choiceDIsTrue,
+              value.data.paperQAs[index][0].isRight,
+              value.data.paperQAs[index][1].isRight,
+              value.data.paperQAs[index][2]?.isRight,
+              value.data.paperQAs[index][3]?.isRight,
             ];
             t.analysisDesc = val.analysisDesc
             t.type = val.type;
@@ -302,41 +341,45 @@ export default function () {
   }, [state]);
 
   const handleSubmit = (ev) => {
-    const data = qList.map((value, index) => {
-      let obj = {
-        choiceAIsTrue: false,
-        choiceBIsTrue: false,
-        choiceCIsTrue: false,
-        choiceDIsTrue: false,
-      };
-      if (typeof state.get(index) == 'string') {
-        switch (state.get(index)) {
-          case 'A':
-            obj.choiceAIsTrue = true;
-            break;
-          case 'B':
-            obj.choiceBIsTrue = true;
-            break;
-          case 'C':
-            obj.choiceCIsTrue = true;
-            break;
-          case 'D':
-            obj.choiceDIsTrue = true;
-            break;
-        }
-      } else {
-        const m = state.get(index);
-        if (m.get(0)) obj.choiceAIsTrue = true;
-        if (m.get(1)) obj.choiceBIsTrue = true;
-        if (m.get(2)) obj.choiceCIsTrue = true;
-        if (m.get(3)) obj.choiceDIsTrue = true;
-      }
-      
-      
-      return obj;
-    });
-    console.log(data);
-    // setFinish(true)
+    // const data = qList.map((value, index) => {
+    //   let obj = {
+    //     choiceAIsTrue: false,
+    //     choiceBIsTrue: false,
+    //     choiceCIsTrue: false,
+    //     choiceDIsTrue: false,
+    //   };
+    //   if (typeof state.get(index) == 'string') {
+    //     switch (state.get(index)) {
+    //       case 'A':
+    //         obj.choiceAIsTrue = true;
+    //         break;
+    //       case 'B':
+    //         obj.choiceBIsTrue = true;
+    //         break;
+    //       case 'C':
+    //         obj.choiceCIsTrue = true;
+    //         break;
+    //       case 'D':
+    //         obj.choiceDIsTrue = true;
+    //         break;
+    //     }
+    //   } else {
+    //     const m = state.get(index);
+    //     if (m.get(0)) obj.choiceAIsTrue = true;
+    //     if (m.get(1)) obj.choiceBIsTrue = true;
+    //     if (m.get(2)) obj.choiceCIsTrue = true;
+    //     if (m.get(3)) obj.choiceDIsTrue = true;
+    //   }
+    //
+    //
+    //   return obj;
+    // });
+    // console.log(data);
+    setFinish(true)
+    request1('/paper/submit/' + paperId).then(value => {
+      console.log(value.data)
+      setScore(value.data)
+    })
   };
 
   return (
@@ -351,6 +394,12 @@ export default function () {
               '.css-dzmv7r-JoyRadio-radio.Joy-disabled': { color: '#3990FF' },
             }}
           >
+            {qList.length<=0&&<CircularProgress sx={{
+              position: 'fix',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              top: 200
+            }}/>}
               {qList.map((value, index) => {
                 if (value.type == 0) {
                   return <SCQuestions finish={finish} key={index} index={index} state={state}
@@ -364,11 +413,36 @@ export default function () {
                                        data={qList[index]} fillAns={fillAns}/>;
                 }
               })}
-              {qList.length > 0 && <Button sx={{
+              {(qList.length > 0&&!finish) && <Button sx={{
                 width: '100%',
                 mt: 3,
                 mb: 3
               }} onClick={handleSubmit}>提交</Button>}
+          {finish&&(
+            <Card variant="outlined" sx={{
+              maxWidth: 400,
+              position: 'relative',
+              left: '50%',
+              transform: 'translateX(-50%)'
+            }}>
+              <Typography level="h2" fontSize="xl" sx={{ mb: 0.5 }}>
+                您的正确率为：
+              </Typography>
+              <Typography level="h1" color={'primary'}>{score*100}%</Typography>
+            </Card>
+          )}
+            {finish&&
+              <Link href={'/exam'}>
+              <Button
+              sx={{
+                width: '100%',
+                mt: 3,
+                mb: 3
+              }}
+            >
+                返回
+            </Button>
+              </Link>}
             </Box>
         </Container>
       </CssVarsProvider>
