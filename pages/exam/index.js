@@ -36,7 +36,11 @@ export default function () {
         <CardActionArea disableSpacing sx={{height: 200, flex: 1}}>
           <Link href={'/exam/test/' +num}>
           <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
+            <Typography gutterBottom variant="h5" component="div" sx={{
+              fontFamily: 'var(--myfont-font)',
+              fontWeight: 20,
+              ml: 1
+            }}>
               题库自测
             </Typography>
           </CardContent>
@@ -64,7 +68,13 @@ export default function () {
       </Card>
       <Card elevation={5} sx={{ width: {xs: 400, md: 500, lg: 600}, display: 'flex', mt:6}}>
         <CardActions disableSpacing sx={{height: 200, flex: 1}}>
-          考试列表
+          <Typography gutterBottom variant="h5" component="div" sx={{
+            fontFamily: 'var(--myfont-font)',
+            fontWeight: 20,
+            ml: 3
+          }}>
+            考试列表
+          </Typography>
         </CardActions>
         <CardActions disableSpacing sx={{flex: 1}} >
           {!login?<Box>请先去登录</Box>:

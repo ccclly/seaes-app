@@ -59,9 +59,11 @@ const SCQuestions = ({ state, setState, index, data, finish, fillAns }) => {
             key={item.id}
             sx={{ boxShadow: '', bgcolor: 'background.body' }}
           >
-            <ListItemDecorator>
-              {['A', 'B', 'C', 'D'][index]}
-            </ListItemDecorator>
+            <Typography sx={{
+              fontFamily: 'var(--myfont-font)',
+            }}>
+              {['A.', 'B.', 'C.', 'D.'][index]}
+            </Typography>
             <Radio
               overlay
               value={item.id}
@@ -136,7 +138,11 @@ const MCQuestions = ({ state, setState, index: p_index, data, finish, fillAns })
       {data.choice.map((value, index) => (
         <Sheet key={index} variant="outlined"
                sx={{ bgcolor: 'background.body' }}>
-          {['A', 'B', 'C', 'D '][index]}
+          <Typography sx={{
+            mr:1,
+            lineHeight: 1.1,
+            fontFamily: 'var(--myfont-font)',
+          }}>{['A.', 'B.', 'C.', 'D.'][index]}</Typography>
           <Checkbox
             label={value.name}
             overlay
@@ -221,12 +227,6 @@ const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
             key={item.name}
             sx={{ boxShadow: 'sm', bgcolor: 'background.body' }}
           >
-            <ListItemDecorator>
-
-              {[
-                <CheckCircleOutlineIcon/>,
-                <HighlightOffIcon/>][index]}
-            </ListItemDecorator>
             <Radio
               overlay
               value={item.id}
@@ -268,6 +268,7 @@ export default function () {
   const [qList, setQList] = useState([]);
   const [paperId, setPaperId] = useState(0);
   const [score, setScore] = useState(null);
+  const [exam, setExam] = useState(null);
 
   const fillAns = (quId, ansId) => {
     request1.post('/paper/fill-answer', {
@@ -287,6 +288,7 @@ export default function () {
       }).then(value => {
         console.log(value.data);
         setPaperId(value.data.paper.id)
+        setExam(value.data.exam)
         const data = value.data.quList.map((val, index) => {
           const t = {};
           t.desc = val.name;
@@ -379,52 +381,74 @@ export default function () {
               '.css-1wtx7bg-JoyRadio-root.Joy-disabled': { color: '#25252d' },
               '.css-1axruhw-JoyCheckbox-root.Joy-disabled': { color: '#25252d' },
               '.css-dzmv7r-JoyRadio-radio.Joy-disabled': { color: '#3990FF' },
+              mt: 3,
             }}
           >
-            {qList.length<=0&&<CircularProgress sx={{
+            {exam&&(<><Typography
+              sx={{
+                fontFamily: 'var(--myfont-font)',
+                fontSize: 25
+              }}
+            >
+              {exam.name}
+            </Typography>
+              <Typography>
+                题目数量：{exam.count}
+              </Typography>
+              <Typography>
+                考试时长：{exam.totalTime}
+              </Typography>
+            </>)
+            }
+            {qList.length <= 0 && <CircularProgress sx={{
               position: 'fix',
               left: '50%',
               transform: 'translateX(-50%)',
-              top: 200
+              top: 200,
             }}/>}
             {qList.map((value, index) => {
               if (value.type == 0) {
-                return <SCQuestions finish={finish} key={index} index={index} state={state}
-                                    setState={setState} data={qList[index]} fillAns={fillAns}/>;
+                return <SCQuestions finish={finish} key={index} index={index}
+                                    state={state}
+                                    setState={setState} data={qList[index]}
+                                    fillAns={fillAns}/>;
               } else if (value.type == 1) {
-                return <MCQuestions finish={finish} key={index} index={index} state={state}
+                return <MCQuestions finish={finish} key={index} index={index}
+                                    state={state}
                                     setState={setState} fillAns={fillAns}
                                     data={qList[index]}/>;
               } else {
-                return <TOFQuestions finish={finish} key={index} index={index} state={state} setState={setState}
+                return <TOFQuestions finish={finish} key={index} index={index}
+                                     state={state} setState={setState}
                                      data={qList[index]} fillAns={fillAns}/>;
               }
             })}
-            {(qList.length > 0&&!finish) && <Button sx={{
+            {(qList.length > 0 && !finish) && <Button sx={{
               width: '100%',
               mt: 3,
-              mb: 3
+              mb: 3,
             }} onClick={handleSubmit}>提交</Button>}
-            {finish&&(
+            {finish && (
               <Card variant="outlined" sx={{
                 maxWidth: 400,
                 position: 'relative',
                 left: '50%',
-                transform: 'translateX(-50%)'
+                transform: 'translateX(-50%)',
               }}>
                 <Typography level="h2" fontSize="xl" sx={{ mb: 0.5 }}>
                   您的正确率为：
                 </Typography>
-                <Typography level="h1" color={'primary'}>{score*100}%</Typography>
+                <Typography level="h1" color={'primary'}>{score *
+                  100}%</Typography>
               </Card>
             )}
-            {finish&&
+            {finish &&
               <Link href={'/exam'}>
                 <Button
                   sx={{
                     width: '100%',
                     mt: 3,
-                    mb: 3
+                    mb: 3,
                   }}
                 >
                   返回

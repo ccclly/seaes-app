@@ -27,14 +27,21 @@ export default function Home ({data}) {
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <link rel="icon" href="/favicon.ico"/>
       </Head>
-
       <main className={styles.main}>
-        <Typography>
+        <Typography sx={{
+          fontFamily: 'var(--myfont-font)',
+          fontSize: 20
+        }}>
           实验室安全准入教育
         </Typography>
         <Typography gutterBottom>
           实验室是科研机构相关人员从事科研工作的主要场所,也是重大科研成果的诞生地。实验室安全是推进科研活动不断正常向前开展的基本保证。实验室安全准入教育是加强实验室规范教育的系统工程，面向教师、学生进行实验安全、操作规范和专业能力教育与考核，考核合格、具备相应实验知识、能力、素质的人员获得准入资格才可以进入实验室管理、教学与学习、研究。围绕“安全意识树立、安全知识掌握、安全技能运用”的教育目标，建立科学完善的实验室安全课程及考核体系，使实验室达到一种安全、稳定、和谐的可持续状态。
         </Typography>
+        <Box sx={{
+          fontFamily: 'var(--myfont-font)',
+          color: 'white'
+        }}>Hello, Next.js!最新通知公告</Box>
+
         <Grid container spacing={0}>
           <Grid xs={12} sm={6} item>
             <Box>
@@ -110,7 +117,9 @@ export default function Home ({data}) {
                   {/*<CardContent>*/}
                   {/*</CardContent>*/}
                 </Card>
-                <Typography gutterBottom component="div">
+                <Typography gutterBottom component="div" sx={{
+                  fontFamily: 'var(--myfont-font)',
+                }}>
                   {val.name}
                 </Typography>
               </Grid>

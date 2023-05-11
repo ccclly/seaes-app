@@ -20,11 +20,11 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 function EditToolbar (props) {
-  const { createExam, handleDelete } = props;
+  const { createNotice, handleDelete } = props;
 
   return (
     <GridToolbarContainer>
-      <Button color="primary" startIcon={<AddIcon/>} onClick={createExam}>
+      <Button color="primary" startIcon={<AddIcon/>} onClick={createNotice}>
         新建内容
       </Button>
       <Button color={'error'} startIcon={<DeleteOutlineIcon/>} onClick={handleDelete}>
@@ -54,6 +54,8 @@ export default () => {
   const createNotice = () => {
     setUpdate('')
     setType('notice');
+    setState('');
+    setTitle('');
     setOpen(true);
   };
   const createRule = () => {
@@ -129,14 +131,14 @@ export default () => {
                 toolbar: EditToolbar,
               }}
               onCellDoubleClick={params => {
-                setType('rule')
+                setType('notice')
                 setTitle(params.row.title)
                 setState(params.row.description)
                 setOpen(true)
                 setUpdate(params.row.id)
               }}
               slotProps={{
-                toolbar: {},
+                toolbar: {createNotice},
               }}
             />
           </Box>
@@ -175,14 +177,14 @@ export default () => {
         </Grid>
       </Grid>
       <ButtonGroup variant="contained" aria-label="outlined primary button group">
-      <Button variant={'contained'} onClick={createNotice}>
-        发布通知公告
-      </Button>
-      <Button variant={'contained'} onClick={createRule}>
-        发布规章制度
-      </Button>
+      {/*<Button variant={'contained'} onClick={createNotice}>*/}
+      {/*  发布通知公告*/}
+      {/*</Button>*/}
+      {/*<Button variant={'contained'} onClick={createRule}>*/}
+      {/*  发布规章制度*/}
+      {/*</Button>*/}
       </ButtonGroup>
-      {open&&<Button color={'error'} onClick={() => setOpen(false)}>取消</Button>}
+      {open&&<Button color={'error'} variant={'contained'} onClick={() => setOpen(false)}>取消</Button>}
       {open && <Box>
         <Typography id="modal-modal-title" variant="h6" component="h2">
           创建新{type === 'notice' ? '通知消息' : '规章制度'}

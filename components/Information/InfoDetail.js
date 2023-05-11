@@ -1,4 +1,4 @@
-import { Breadcrumbs, Container, Paper, Typography } from '@mui/material';
+import { Box, Breadcrumbs, Container, Paper, Typography } from '@mui/material';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import request from '@/Util/request';
@@ -49,7 +49,11 @@ export default function ({type}) {
       <Typography textAlign={'center'} mt={2}>
         {state.title}
       </Typography>
+      <Box sx={{
+        font: 'Arial, sans-serif'
+      }}>
         <div dangerouslySetInnerHTML={{ __html: state.description }}/>
+      </Box>
     </Paper>
   </Container>)
 }

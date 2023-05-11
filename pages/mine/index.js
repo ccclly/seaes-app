@@ -71,7 +71,10 @@ export default () => {
           :
           isLogin ?
             <Container>
-              <Typography variant="h4" gutterBottom>
+              <Typography variant="h4" gutterBottom sx={{
+                fontFamily: 'var(--myfont-font)',
+                mt: 2
+              }}>
                 你好，用户{isLogin.name}
               </Typography>
               <Grid container>

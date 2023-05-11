@@ -28,6 +28,7 @@ import CourseManage from '@/components/DashBoard/CourseManage';
 import NoticeManage from '@/components/DashBoard/NoticeManage';
 import RepositoryManage from '@/components/DashBoard/RepositoryManage';
 import EnterManage from '@/components/DashBoard/EnterManage';
+import { Button } from '@mui/material';
 // import Chart from './Chart';
 // import Deposits from './Deposits';
 // import Orders from './Orders';
@@ -95,7 +96,7 @@ const mdTheme = createTheme();
 
 function DashboardContent() {
   const [open, setOpen] = useState(true);
-  const [current, setCurrent] = useState(menu.DASHBOARD);
+  const [current, setCurrent] = useState(menu.USERMANAGE);
   const currentPane = () => {
     if (current === menu.DASHBOARD) return <DashBoardPane />
     else if (current === menu.USERMANAGE) return <UserManage/>
@@ -142,6 +143,14 @@ function DashboardContent() {
             >
               后台仪表盘
             </Typography>
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+                <Button  sx={{ color: '#fff' }} onClick={()=>{
+                  localStorage.removeItem('token');
+                  location.reload()
+                }}>
+                  退出登录
+                </Button>
+            </Box>
             {/*<IconButton color="inherit">*/}
             {/*  <Badge badgeContent={4} color="secondary">*/}
             {/*    <NotificationsIcon />*/}

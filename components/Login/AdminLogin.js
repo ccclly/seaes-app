@@ -13,6 +13,8 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import axios from '/Util/request';
+import { Alert, CardMedia, Snackbar } from '@mui/material';
+import { useState } from 'react';
 
 function Copyright(props) {
     return (
@@ -31,21 +33,27 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignInSide({setToken}) {
-    const handleSubmit = (event) => {
+  const [open, setOpen] = useState(false);
+  const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         axios.post('/user/login', {
             name: data.get('name'),
             password: data.get('password')
         }).then(res => {
-            console.log(111)
-            const {user_type} = res.data;
-            console.log(user_type)
+          if (!res.data.id) {
+            console.log('222')
+            setOpen(true);
+          }else {
+            console.log(res);
+            const { user_type } = res.data;
+            console.log(user_type);
             if (user_type === '0') {
-                throw Error("你不是管理员")
+              throw Error('你不是管理员');
             }
             localStorage.setItem('token', JSON.stringify(res.data.token));
-            setToken(res.data.token)
+            setToken(res.data.token);
+          }
         }).catch(err => {
             console.log('失败')
         })
@@ -53,6 +61,16 @@ export default function SignInSide({setToken}) {
 
     return (
         <ThemeProvider theme={theme}>
+          <Snackbar
+            open={open}
+            autoHideDuration={6000}
+            anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+            onClose={()=>setOpen(false)}
+          >
+            <Alert onClose={()=>setOpen(false)} severity="error" sx={{ width: '100%' }}>
+              登录失败
+            </Alert>
+          </Snackbar>
             <Grid container component="main" sx={{height: '100vh'}}>
                 <CssBaseline/>
                 <Grid
@@ -61,7 +79,7 @@ export default function SignInSide({setToken}) {
                     sm={4}
                     md={7}
                     sx={{
-                        backgroundImage: 'url(https://source.unsplash.com/random)',
+                        backgroundImage: 'url(/image/ImageForArticle_22064_16436342404173431.webp)',
                         backgroundRepeat: 'no-repeat',
                         backgroundColor: (t) =>
                             t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
