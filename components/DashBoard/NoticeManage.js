@@ -25,10 +25,24 @@ function EditToolbar (props) {
   return (
     <GridToolbarContainer>
       <Button color="primary" startIcon={<AddIcon/>} onClick={createNotice}>
-        新建内容
+        新建通知
       </Button>
       <Button color={'error'} startIcon={<DeleteOutlineIcon/>} onClick={handleDelete}>
-        删除内容
+        删除通知
+      </Button>
+    </GridToolbarContainer>
+  );
+}
+function EditToolbar1 (props) {
+  const { createRule, handleDelete1 } = props;
+
+  return (
+    <GridToolbarContainer>
+      <Button color="primary" startIcon={<AddIcon/>} onClick={createRule}>
+        新建制度
+      </Button>
+      <Button color={'error'} startIcon={<DeleteOutlineIcon/>} onClick={handleDelete1}>
+        删除制度
       </Button>
     </GridToolbarContainer>
   );
@@ -44,6 +58,8 @@ export default () => {
   const [type, setType] = useState('');
   const [notice, setNotice] = useState([]);
   const [rule, setRule] = useState([]);
+  const [select, setSelect] = useState([]);
+  const [select1, setSelect1] = useState([]);
   useEffect(() => {
     request.get('/notice/list').then(value => setNotice(value.data));
     request.get('/rule/list').then(value => setRule(value.data));
@@ -52,7 +68,7 @@ export default () => {
   }, []);
 
   const createNotice = () => {
-    setUpdate('')
+    setUpdate('');
     setType('notice');
     setState('');
     setTitle('');
@@ -61,8 +77,26 @@ export default () => {
   const createRule = () => {
     setUpdate('')
     setType('rule');
+    setState('')
+    setTitle('');
     setOpen(true);
   };
+
+  const handleDelete = () => {
+    select.forEach(value => {
+      request.post('/notice/delete/' + value).then(value1 => {
+        setNotice(value1.data);
+      })
+    })
+  }
+
+  const handleDelete1 = () => {
+    select1.forEach(value => {
+      request.post('/rule/delete/' + value).then(value1 => {
+        setNotice(value1.data);
+      })
+    })
+  }
 
   const handleChange = (content) => {
     setState(content);
@@ -74,17 +108,9 @@ export default () => {
 
     let url =null;
     if (type === 'notice'){
-      if (update == '') {
-        url = '/notice/save';
-      } else {
-        url =  '/notice/update'
-      }
+      url = '/notice/save';
     }else {
-      if (update == '') {
-        url = '/rule/save';
-      } else {
-        url =  '/rule/update'
-      }
+      url = '/rule/save';
     }
     request.post(url, {
       title: data.get('name'),
@@ -130,50 +156,62 @@ export default () => {
               slots={{
                 toolbar: EditToolbar,
               }}
+              onRowSelectionModelChange={(par, a) => {
+                setSelect(par)
+              }}
               onCellDoubleClick={params => {
                 setType('notice')
                 setTitle(params.row.title)
                 setState(params.row.description)
-                setOpen(true)
                 setUpdate(params.row.id)
+                setOpen(true)
               }}
               slotProps={{
-                toolbar: {createNotice},
+                toolbar: {createNotice, handleDelete},
               }}
             />
           </Box>
         </Grid>
         <Grid xs={6} item>
-          <Paper elevation={2} sx={{
-            height: 300
-          }}>
-            <Typography>
-              规章制度列表
-            </Typography>
-            <List>
-              {rule.map(value => (
-                <Box display={'flex'}>
-                  <ListItem button onClick={ev => {
-                    setType('rule')
-                    setTitle(value.title)
-                    setState(value.description)
-                    setOpen(true)
-                    setUpdate(value.id)
-                  }}>
-                    <Typography noWrap={true} sx={{
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap',
-                      textOrientation: 'ellipsis',
-                      width: 440
-                    }}>
-                      {value.title}
-                    </Typography>
-                  </ListItem>
-                  <Button>删除</Button>
-                </Box>
-              ))}
-            </List>
-          </Paper>
+          <Box sx={{ height: 300, width: '100%', m: 0 }}>
+            <DataGrid
+              rows={rule}
+              columns={[
+                { field: 'id', headerName: 'ID', width: 60 },
+                {
+                  field: 'title',
+                  headerName: '标题',
+                  width: 420,
+                }
+              ]}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 10,
+                  },
+                },
+              }}
+              onRowSelectionModelChange={(par, a) => {
+                setSelect1(par)
+              }}
+              checkboxSelection={true}
+              pageSizeOptions={[10]}
+              localeText={zhCN.components.MuiDataGrid.defaultProps.localeText}
+              slots={{
+                toolbar: EditToolbar1,
+              }}
+              onCellDoubleClick={params => {
+                setType('rule')
+                setTitle(params.row.title)
+                setState(params.row.description)
+                setUpdate(params.row.id)
+                setOpen(true)
+              }}
+              slotProps={{
+                toolbar: {createRule, handleDelete1},
+              }}
+            />
+          </Box>
         </Grid>
       </Grid>
       <ButtonGroup variant="contained" aria-label="outlined primary button group">
@@ -187,7 +225,7 @@ export default () => {
       {open&&<Button color={'error'} variant={'contained'} onClick={() => setOpen(false)}>取消</Button>}
       {open && <Box>
         <Typography id="modal-modal-title" variant="h6" component="h2">
-          创建新{type === 'notice' ? '通知消息' : '规章制度'}
+          创建/更新{type === 'notice' ? '通知消息' : '规章制度'}
         </Typography>
         <Box
           component={'form'}
@@ -208,7 +246,7 @@ export default () => {
             sx={{ width: '100%' }}
             defaultValue={title}
           />
-          <RichText defaultValue={state} lang={'zh_cn'} onChange={handleChange}/>
+          <RichText height="100%" defaultValue={state} lang={'zh_cn'} onChange={handleChange}/>
           <Button variant={'contained'} type={'submit'}>确定发布</Button>
         </Box>
       </Box>}

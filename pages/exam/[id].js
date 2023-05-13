@@ -23,6 +23,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useRouter } from 'next/router';
 import request1 from '@/Util/request1';
 import Link from 'next/link';
+import ExamCountdown from '@/components/ExamCountDown';
 
 const SCQuestions = ({ state, setState, index, data, finish, fillAns }) => {
   let defaultV = null
@@ -267,6 +268,7 @@ export default function () {
   const [finish, setFinish] = useState(false);
   const [qList, setQList] = useState([]);
   const [paperId, setPaperId] = useState(0);
+  const [paper, setPaper] = useState(null);
   const [score, setScore] = useState(null);
   const [exam, setExam] = useState(null);
 
@@ -289,6 +291,9 @@ export default function () {
         console.log(value.data);
         setPaperId(value.data.paper.id)
         setExam(value.data.exam)
+        setPaper(value.data.paper)
+        console.log(value.data.paper)
+        console.log(value.data.paper.createAt)
         const data = value.data.quList.map((val, index) => {
           const t = {};
           t.desc = val.name;
@@ -397,6 +402,11 @@ export default function () {
               </Typography>
               <Typography>
                 考试时长：{exam.totalTime}
+              </Typography>
+              <Typography>
+                {console.log(paper.createAt)}
+                {paper!=null&&<ExamCountdown rstartTime={paper.createAt}
+                                examDuration={exam.totalTime}/>}
               </Typography>
             </>)
             }

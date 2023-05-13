@@ -4,20 +4,8 @@ import { useEffect, useState } from 'react';
 import request from '@/Util/request';
 import { useRouter } from 'next/router';
 
-export default function ({type}) {
+export default function ({type,title, description}) {
 
-  const [state, setState] = useState({});
-  const router = useRouter();
-  const { id } = router.query;
-  useEffect(() => {
-    if (!!id) {
-      const url = '/notice/' + id;
-      request.get(url).then(value => {
-        setState(value.data);
-      });
-    }
-
-  }, [id]);
 
   return (<Container>
     <Paper sx={{
@@ -37,22 +25,22 @@ export default function ({type}) {
         >
           {type==='notice'?'通知公告':'规章制度'}
         </Link>
-        <Link
-          underline="hover"
+        <span
           color="text.primary"
           aria-current="page"
-          href={''}
         >
-          {state.title}
-        </Link>
+          {title}
+        </span>
       </Breadcrumbs>
-      <Typography textAlign={'center'} mt={2}>
-        {state.title}
+      <Typography textAlign={'center'} mt={2} variant={'h5'} sx={{
+        fontFamily: 'var(--myfont-font)',
+      }}>
+        {title}
       </Typography>
       <Box sx={{
         font: 'Arial, sans-serif'
       }}>
-        <div dangerouslySetInnerHTML={{ __html: state.description }}/>
+        <div dangerouslySetInnerHTML={{ __html: description }}/>
       </Box>
     </Paper>
   </Container>)
