@@ -319,9 +319,10 @@ export default function () {
         const handleAdd = () => {
           request.get('/question-answer/list/' + params.row.id).then(value => {
             setAnsList(value.data);
+            setId(params.row.id);
+            setOpen1(true);
           });
-          setId(params.row.id);
-          setOpen1(true);
+
         };
         return <Button variant={'contained'} onClick={handleAdd}>添加</Button>;
       },
@@ -512,14 +513,7 @@ export default function () {
           rows={rows}
           columns={columns}
           editMode={'row'}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-              },
-            },
-          }}
-          pageSizeOptions={[10]}
+
           localeText={zhCN.components.MuiDataGrid.defaultProps.localeText}
           checkboxSelection={true}
           slots={{

@@ -92,6 +92,7 @@ export default ()=>{
 
   const createQuBank = () => {
     setTitle('');
+    setId('');
     setOpen(true)
   }
   const handleDelete = () => {
@@ -112,7 +113,7 @@ export default ()=>{
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            创建新题库
+            创建/修改题库
           </Typography>
           <Box
             component={'form'}

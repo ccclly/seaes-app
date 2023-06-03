@@ -138,7 +138,12 @@ export default function () {
       alignItems: 'center',
     }}>
       {state ? <>
-          <Typography variant={'h4'}>
+          <Typography variant={'h4'} sx={{
+            fontFamily: 'var(--myfont-font)',
+            fontSize: 30,
+            mt:2,
+            mb: 1
+          }}>
             {name}
           </Typography>
           <MyPlayer

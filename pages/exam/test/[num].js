@@ -59,9 +59,11 @@ const SCQuestions = ({ state, setState, index, data, finish, fillAns }) => {
             key={item.id}
             sx={{ boxShadow: '', bgcolor: 'background.body' }}
           >
-            <ListItemDecorator>
-              {['A', 'B', 'C', 'D'][index]}
-            </ListItemDecorator>
+            <Typography sx={{
+              fontFamily: 'var(--myfont-font)',
+            }}>
+              {['A.', 'B.', 'C.', 'D.'][index]}
+            </Typography>
             <Radio
               overlay
               value={item.id}
@@ -135,7 +137,11 @@ const MCQuestions = ({ state, setState, index: p_index, data, finish, fillAns })
       {data.choice.map((value, index) => (
         <Sheet key={index} variant="outlined"
                sx={{ bgcolor: 'background.body' }}>
-          {['A', 'B', 'C', 'D '][index]}
+          <Typography sx={{
+            mr:1,
+            lineHeight: 1.1,
+            fontFamily: 'var(--myfont-font)',
+          }}>{['A.', 'B.', 'C.', 'D.'][index]}</Typography>
           <Checkbox
             label={value.name}
             overlay
@@ -231,12 +237,6 @@ const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
             key={item.name}
             sx={{ boxShadow: 'sm', bgcolor: 'background.body' }}
           >
-            <ListItemDecorator>
-
-              {[
-                <CheckCircleOutlineIcon/>,
-                <HighlightOffIcon/>][index]}
-            </ListItemDecorator>
             <Radio
               overlay
               value={item.id}
@@ -304,7 +304,7 @@ export default function () {
       const url = '/paper/test/' + num;
         request1.post(url).then((value) => {
           console.log(value.data);
-          setPaperId(value.data.paper.id)
+          setPaperId(value.data?.paper?.id)
           const data = value.data.quList.map((val, index) => {
             const t = {};
             t.desc = val.name;
@@ -331,14 +331,6 @@ export default function () {
         });
     }
   }, [num]);
-
-
-  const [state, setState] = useState(new Map());
-  useEffect(() => {
-    return () => {
-
-    };
-  }, [state]);
 
   const handleSubmit = (ev) => {
     // const data = qList.map((value, index) => {
@@ -402,14 +394,14 @@ export default function () {
             }}/>}
               {qList.map((value, index) => {
                 if (value.type == 0) {
-                  return <SCQuestions finish={finish} key={index} index={index} state={state}
-                                      setState={setState} data={qList[index]} fillAns={fillAns}/>;
+                  return <SCQuestions finish={finish} key={index} index={index}
+                                     data={qList[index]} fillAns={fillAns}/>;
                 } else if (value.type == 1) {
-                  return <MCQuestions finish={finish} key={index} index={index} state={state}
-                                      setState={setState} fillAns={fillAns}
+                  return <MCQuestions finish={finish} key={index} index={index}
+                                       fillAns={fillAns}
                                       data={qList[index]}/>;
                 } else {
-                  return <TOFQuestions finish={finish} key={index} index={index} state={state} setState={setState}
+                  return <TOFQuestions finish={finish} key={index} index={index}
                                        data={qList[index]} fillAns={fillAns}/>;
                 }
               })}

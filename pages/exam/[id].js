@@ -192,6 +192,16 @@ const MCQuestions = ({ state, setState, index: p_index, data, finish, fillAns })
 
       ))}
     </FormGroup>
+    {
+      finish&&<Box>
+        <Typography>
+          正确答案：{data.choiceIsTrue[0]&&'A'} {data.choiceIsTrue[1]&&'B'} {data.choiceIsTrue[2]&&'C'} {data.choiceIsTrue[3]&&'D'}
+        </Typography>
+        <Typography>
+          解析： {data.analysisDesc}
+        </Typography>
+      </Box>
+    }
   </>);
 };
 const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
@@ -201,6 +211,7 @@ const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
     if (value.checked) {defaultV = value.answerId}
   })
   return (
+    <>
     <RadioGroup aria-label="Your plan" name="people"
                 onChange={event => {
                   // !finish&&setState(
@@ -259,6 +270,17 @@ const TOFQuestions = ({ state, setState, index, data, finish, fillAns }) => {
         ))}
       </List>
     </RadioGroup>
+      {
+        finish&&<Box>
+          <Typography>
+            正确答案：{data.choiceIsTrue[0]&&'正确'} {data.choiceIsTrue[1]&&'错误'}
+          </Typography>
+          <Typography>
+            解析： {data.analysisDesc}
+          </Typography>
+        </Box>
+      }
+    </>
   );
 };
 
@@ -387,6 +409,8 @@ export default function () {
               '.css-1axruhw-JoyCheckbox-root.Joy-disabled': { color: '#25252d' },
               '.css-dzmv7r-JoyRadio-radio.Joy-disabled': { color: '#3990FF' },
               mt: 3,
+              userSelect: 'none'
+
             }}
           >
             {exam&&(<><Typography
@@ -401,12 +425,11 @@ export default function () {
                 题目数量：{exam.count}
               </Typography>
               <Typography>
-                考试时长：{exam.totalTime}
+                考试时长：{exam.totalTime}分钟
               </Typography>
               <Typography>
-                {console.log(paper.createAt)}
                 {paper!=null&&<ExamCountdown rstartTime={paper.createAt}
-                                examDuration={exam.totalTime}/>}
+                                examDuration={exam.totalTime} handleSubmit={handleSubmit} finish={finish}/>}
               </Typography>
             </>)
             }

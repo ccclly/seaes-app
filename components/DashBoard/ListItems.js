@@ -14,6 +14,9 @@ import StorageIcon from '@mui/icons-material/Storage';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import menu from '@/constant/backendMenu';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+
 
 export const MainListItems = ({ setCurrent }) => {
   return (
@@ -33,7 +36,7 @@ export const MainListItems = ({ setCurrent }) => {
         </ListItemButton>
         <ListItemButton onClick={(e) => setCurrent(menu.QUESTIONBANKMANAGE)}>
           <ListItemIcon>
-            <CampaignIcon/>
+            <BookmarkIcon/>
           </ListItemIcon>
           <ListItemText primary="题库管理"/>
         </ListItemButton>
@@ -57,7 +60,7 @@ export const MainListItems = ({ setCurrent }) => {
         </ListItemButton>
         <ListItemButton onClick={(e) => setCurrent(menu.ENTERMANAGE)}>
           <ListItemIcon>
-            <CampaignIcon/>
+            <DoneAllIcon/>
           </ListItemIcon>
           <ListItemText primary="准入管理"/>
         </ListItemButton>

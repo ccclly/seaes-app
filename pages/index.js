@@ -7,10 +7,9 @@ import {
   Drawer, Grid,
   List,
   ListItem,
-  ListItemText,
+  ListItemText, Slide,Grow,
   Typography,
 } from '@mui/material';
-import { Grade } from '@mui/icons-material';
 import Link from 'next/link';
 import defaultUrl from '@/constant/url';
 
@@ -34,22 +33,26 @@ export default function Home ({data}) {
         }}>
           实验室安全准入教育
         </Typography>
-        <Typography gutterBottom>
+        <Typography gutterBottom sx={{
+          mb:2
+        }}>
           实验室是科研机构相关人员从事科研工作的主要场所,也是重大科研成果的诞生地。实验室安全是推进科研活动不断正常向前开展的基本保证。实验室安全准入教育是加强实验室规范教育的系统工程，面向教师、学生进行实验安全、操作规范和专业能力教育与考核，考核合格、具备相应实验知识、能力、素质的人员获得准入资格才可以进入实验室管理、教学与学习、研究。围绕“安全意识树立、安全知识掌握、安全技能运用”的教育目标，建立科学完善的实验室安全课程及考核体系，使实验室达到一种安全、稳定、和谐的可持续状态。
         </Typography>
-        <Box sx={{
-          fontFamily: 'var(--myfont-font)',
-          color: 'white'
-        }}>Hello, Next.js!最新通知公告</Box>
 
         <Grid container spacing={0}>
           <Grid xs={12} sm={6} item>
             <Box>
-              <Box>
-                <span>
+              <Box display={'flex'} sx={{
+                mb: -1
+              }}>
+                <Typography sx={{
+                  fontFamily: 'var(--myfont-font)',
+                  fontSize: 18,
+                  lineHeight: 2
+                }}>
                   最新通知公告
-                </span>
-                <Button color={'secondary'}><Link
+                </Typography>
+                <Button ><Link
                   href={'/notices'}>更多</Link></Button>
               </Box>
               <List component="nav" aria-label="mailbox folders"
@@ -72,11 +75,17 @@ export default function Home ({data}) {
           </Grid>
           <Grid xs={12} sm={6} item>
             <Box>
-              <Box>
-                <span>
+              <Box display={'flex'} sx={{
+                mb: -1
+              }}>
+                <Typography sx={{
+                  fontFamily: 'var(--myfont-font)',
+                  fontSize: 18,
+                  lineHeight: 2
+                }}>
                   最新规章制度
-                </span>
-                <Button color={'secondary'}><Link
+                </Typography>
+                <Button ><Link
                   href={'/rules'}>更多</Link></Button>
               </Box>
               <List component="nav" aria-label="mailbox folders"
@@ -95,34 +104,43 @@ export default function Home ({data}) {
           </Grid>
         </Grid>
         <Grid container>
-          <Box>
-            <span>
-              安全课程
-            </span>
-              <Button color={'secondary'}><Link
-                href={'/learn'}>更多</Link></Button>
+          <Box display={'flex'} sx={{
+            mt: 1,
+            mb: 1
+          }}>
+            <Typography sx={{
+              fontFamily: 'var(--myfont-font)',
+              fontSize: 18,
+              lineHeight: 2
+            }}>
+              最新课程
+            </Typography>
+            <Button ><Link
+              href={'/learn'}>更多</Link></Button>
           </Box>
-          <Grid container sx={{ height: 280 }} spacing={1}>
+          <Grid container sx={{ height: 240 }} spacing={2}>
 
             {courses.map((val, index) => (
-              <Grid xs={3} item key={index}>
-                <Card>
-                  <Link href={'/learn/'+val.id}>
-                  <CardMedia
-                    component="img"
-                    image={defaultUrl+'/'+val.imgName}
-                    alt="Paella dish"
-                  />
-                  </Link>
-                  {/*<CardContent>*/}
-                  {/*</CardContent>*/}
-                </Card>
-                <Typography gutterBottom component="div" sx={{
-                  fontFamily: 'var(--myfont-font)',
-                }}>
-                  {val.name}
-                </Typography>
-              </Grid>
+              <Grow in timeout={300+index*50} key={index}>
+                <Grid xs={3} item key={index}>
+                  <Card>
+                    <Link href={'/learn/'+val.id}>
+                    <CardMedia
+                      component="img"
+                      image={defaultUrl+'/'+val.imgName}
+                      alt="Paella dish"
+                    />
+                    </Link>
+                    {/*<CardContent>*/}
+                    {/*</CardContent>*/}
+                  </Card>
+                  <Typography gutterBottom component="div" sx={{
+                    fontFamily: 'var(--myfont-font)',
+                  }}>
+                    {val.name}
+                  </Typography>
+                </Grid>
+              </Grow>
             ))}
           </Grid>
         </Grid>

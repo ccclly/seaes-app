@@ -7,6 +7,8 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
+import * as React from 'react';
+import KeyIcon from '@mui/icons-material/Key';
 
 export default function ({ url }) {
 
@@ -58,7 +60,13 @@ export default function ({ url }) {
             </Button></Link>
           ))}
         </Box>
-        <Button>fjwei</Button>
+        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <Link href={'/admin'}>
+          <Button  sx={{ color: '#fff' }} endIcon={<KeyIcon/>}>
+            后台入口
+          </Button>
+          </Link>
+        </Box>
       </Toolbar>
       <Divider/>
     </AppBar>

@@ -3,21 +3,24 @@ import {
   createAsyncLocalStorage
 } from 'next/dist/client/components/async-local-storage';
 import {
+  Alert,
   Avatar,
   Box,
   Button,
-  Container, Grid,
+  Container, Grid, Snackbar,
   TextField,
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
 import request1 from '@/Util/request1';
+import * as React from 'react';
+import { useState } from 'react';
 
 
 
 function Copyright(props) {
   return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+    <Typography variant="body2" align="center" {...props}>
       {'Copyright © '}
       <Link color="inherit" href="/">
         实验室安全教育与考试系统
@@ -30,6 +33,7 @@ function Copyright(props) {
 
 export default function UserLogin({setIsLogin, setStatus}) {
 
+  const [open, setOpen] = useState(false);
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
@@ -38,15 +42,31 @@ export default function UserLogin({setIsLogin, setStatus}) {
       name: data.get('name'),
       password: data.get('password')
     }).then(value => {
-      localStorage.setItem('loginInfo', JSON.stringify(value.data));
-      setIsLogin(value.data)
-      setStatus(1)
+      if (!value.data.id) {
+        setOpen(true);
+      }else {
+        localStorage.setItem('loginInfo', JSON.stringify(value.data));
+        setIsLogin(value.data);
+        setStatus(1);
+      }
+    }).catch(err => {
+      console.log('fjwaeifiw');
     })
   }
 
   return (
     <>
       <Container component="main" maxWidth="xs">
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+          onClose={()=>setOpen(false)}
+        >
+          <Alert onClose={()=>setOpen(false)} severity="error" sx={{ width: '100%' }}>
+            登录失败
+          </Alert>
+        </Snackbar>
         <Box
           sx={{
             marginTop: 8,
@@ -55,7 +75,7 @@ export default function UserLogin({setIsLogin, setStatus}) {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <Avatar sx={{ m: 1, bgcolor: '' }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
@@ -70,7 +90,6 @@ export default function UserLogin({setIsLogin, setStatus}) {
               label="账号"
               name="name"
               autoFocus
-              color={'secondary'}
             />
             <TextField
               margin="normal"
@@ -81,7 +100,6 @@ export default function UserLogin({setIsLogin, setStatus}) {
               type="password"
               id="password"
               autoComplete="current-password"
-              color={'secondary'}
             />
             {/*<FormControlLabel*/}
             {/*  control={<Checkbox value="remember" color="primary" />}*/}
@@ -92,7 +110,6 @@ export default function UserLogin({setIsLogin, setStatus}) {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              color={'secondary'}
             >
               登录
             </Button>

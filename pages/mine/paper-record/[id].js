@@ -59,9 +59,11 @@ const SCQuestions = ({ state, setState, index, data, finish, fillAns }) => {
             key={item.id}
             sx={{ boxShadow: '', bgcolor: 'background.body' }}
           >
-            <ListItemDecorator>
-              {['A', 'B', 'C', 'D'][index]}
-            </ListItemDecorator>
+            <Typography sx={{
+              fontFamily: 'var(--myfont-font)',
+            }}>
+              {['A.', 'B.', 'C.', 'D.'][index]}
+            </Typography>
             <Radio
               overlay
               value={item.id}
@@ -135,7 +137,11 @@ const MCQuestions = ({ state, setState, index: p_index, data, finish, fillAns })
       {data.choice.map((value, index) => (
         <Sheet key={index} variant="outlined"
                sx={{ bgcolor: 'background.body' }}>
-          {['A', 'B', 'C', 'D '][index]}
+          <Typography sx={{
+            mr:1,
+            lineHeight: 1.1,
+            fontFamily: 'var(--myfont-font)',
+          }}>{['A.', 'B.', 'C.', 'D.'][index]}</Typography>
           <Checkbox
             label={value.name}
             overlay
@@ -393,6 +399,7 @@ export default function () {
               '.css-1wtx7bg-JoyRadio-root.Joy-disabled': { color: '#25252d' },
               '.css-1axruhw-JoyCheckbox-root.Joy-disabled': { color: '#25252d' },
               '.css-dzmv7r-JoyRadio-radio.Joy-disabled': { color: '#3990FF' },
+              mt: 3
             }}
           >
               {qList.map((value, index) => {

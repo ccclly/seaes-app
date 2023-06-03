@@ -1,4 +1,5 @@
-import * as React from 'react';
+
+import { useRouter  } from 'next/router';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
@@ -182,7 +183,20 @@ const TOFQuestions = ({ state, setState, index, data }) => {
 };
 
 export default function () {
+  const router = useRouter();
 
+  useEffect(() => {
+    const exitingFunction = () => {
+      console.log("exiting...");
+    };
+
+    router.events.on("routeChangeStart", exitingFunction);
+
+    return () => {
+      console.log("unmounting component...");
+      router.events.off("routeChangeStart", exitingFunction);
+    };
+  }, []);
   const qList = [
     {
       type: 0,
@@ -232,7 +246,9 @@ export default function () {
     <StyledEngineProvider injectFirst>
       <CssVarsProvider>
         <Container>
-          <Box>
+          <Box sx={{
+            userSelect: 'none'
+          }}>
             {qList.map((value, index) => {
               if (value.type == 0) {
                 return <SCQuestions key={index} index={index} state={state}

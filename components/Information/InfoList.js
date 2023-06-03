@@ -31,11 +31,15 @@ export default function ({type, data}) {
       <List component="nav" aria-label="mailbox folders"
             sx={{ paddingRight: 0 }}>
         {data.reverse().map((value, index) => (
-          <ListItem divider button key={index}>
-            <Link href={'/' + (type === 'notice'?'notices':'rules') + '/' + value.id}>
-              <Typography noWrap={true}>{value.title}</Typography>
+
+            <Link href={'/' + (type === 'notice'?'notices':'rules') + '/' + value.id} key={index}>
+              <ListItem divider button key={index}><Typography noWrap={true} sx={{
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOrientation: 'ellipsis'
+              }}>{value.title}</Typography> </ListItem>
             </Link>
-          </ListItem>
+
         ))}
       </List>
     </Paper>

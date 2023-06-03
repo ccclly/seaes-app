@@ -190,6 +190,7 @@ function Step2 ({chapter, setChapter, lesson, setLesson, id}) {
 
       {chapter.length>0&&<Grid sx={{ width: '100%' }}>
         {chapter.map((val, index) => {
+          let ln = 1
           return (<Paper key={val.name} sx={{mb: 1}}>
             <Grid aria-controls="panel1d-content"
                               id="panel1d-header">
@@ -207,7 +208,7 @@ function Step2 ({chapter, setChapter, lesson, setLesson, id}) {
                         return (<>
                         <ListItem key={val1.name} divider sx={{ display: 'flex' }}>
                           <Typography sx={{ flex: 1 }}>
-                            {index+1+'.' +(index1+1)+'  '+val1.name}
+                            {index+1+'.' +(ln++)+'  '+val1.name}
                           </Typography>
                           {
                             !!val1.vedioName?
@@ -341,7 +342,7 @@ function Steps ({ setCreate, name, description, id, imgN, setList }) {
         setLesson(value.data.lessonList)
       });
     }
-  }, [])
+  }, [id])
 
   const fn = () => {
     if (activeStep === 0) {
@@ -523,8 +524,20 @@ export default function () {
 
 
   const createCourse = () => {
+    setId(null);
+    setName('');
+    setDescription('');
+    setImageN('');
     setCreate(true);
   };
+
+  const handleDelete = () => {
+    selected.forEach(value => {
+      request.post('/course/delete/' + value).then(value1 => {
+        setList(value1.data);
+      })
+    })
+  }
 
   return (
     <>
@@ -571,7 +584,7 @@ export default function () {
               setSelected(par)
             }}
             slotProps={{
-              toolbar: {createCourse},
+              toolbar: {createCourse, handleDelete},
             }}
           />
         </Box>

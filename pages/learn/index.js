@@ -27,7 +27,7 @@ export default () => {
 
         {dataList.map((value, index) => (
           <Grid item key={index}>
-            <Grow in>
+            <Grow in timeout={300+60*index}>
               <Card key={value.name} elevation={3}
                     sx={{ width: { xs: 225, sm: 250, md: 260 }, height: 230 }}>
                 <Link href={'/learn/' +value.id}>

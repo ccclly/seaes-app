@@ -1,4 +1,4 @@
-import { DataGrid, GridToolbarContainer, zhCN } from '@mui/x-data-grid';
+import { DataGrid, GridToolbarContainer, GridToolbarExport, zhCN } from '@mui/x-data-grid';
 import {
   Autocomplete,
   Box,
@@ -14,19 +14,16 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 
-const columns = [
+const rowColumns = [
   { field: 'id', headerName: 'ID', width: 60 },
   {
     field: 'name',
     headerName: '用户名',
     width: 120,
-
-
   },
   {
     field: 'user_type',
     headerName: '用户类型',
-
     valueGetter: (param) => {
       if (param.row.userType == 0) {
         return '普通用户';
@@ -40,52 +37,21 @@ const columns = [
     field: 'grade',
     headerName: '年级',
     width: 100,
-
   },
   {
     field: 'college',
     headerName: '学院',
     width: 210,
-
   },
   {
     field: 'major',
     headerName: '班级',
     sortable: false,
-
     width: 160,
   },
-  // {
-  //   field: 'num',
-  //   headerName: '刷题数量',
-  //   width: 150
-  // },
-  // {
-  //   field: 'actions',
-  //   headerName: '操作',
-  //   renderCell: (params) => (
-  //     <Box onClick={event => {
-  //       console.log(params)
-  //     }}>
-  //       <Button variant={'contained'} startIcon={<Save/>}>保存</Button>
-  //     </Box>
-  //   ),
-  // },
 ];
 
 
-const rows = [
-  {id: 1, username: '111', grade: 2016, college: '信息科学与工程学院', major: '软件工程', num: 123},
-  {id: 2, username: '112', grade: 2016, college: '信息科学与工程学院', major: '软件工程', num: 124},
-  {id: 3, username: '113', grade: 2016, college: '信息科学与工程学院', major: '软件工程', num: 125},
-  {id: 4, username: '114', grade: 2016, college: '材料科学与工程学院', major: '高分子材料与工程', num: 126},
-  {id: 5, username: '115', grade: 2016, college: '材料科学与工程学院', major: '高分子材料与工程', num: 123},
-  {id: 6, username: '115', grade: 2016, college: '材料科学与工程学院', major: '高分子材料与工程', num: 123},
-  {id: 7, username: '115', grade: 2016, college: '材料科学与工程学院', major: '高分子材料与工程', num: 123},
-  {id: 8, username: '115', grade: 2016, college: '材料科学与工程学院', major: '高分子材料与工程', num: 123},
-  {id: 9, username: '115', grade: 2016, college: '材料科学与工程学院', major: '高分子材料与工程', num: 123},
-  {id: 10, username: '115', grade: 2016, college: '材料科学与工程学院', major: '高分子材料与工程', num: 123},
-];
 
 
 function EditToolbar(props) {
@@ -109,6 +75,7 @@ function EditToolbar(props) {
       <Button color={'error'} startIcon={<DeleteOutlineIcon />} onClick={handleDelete}>
         删除用户
       </Button>
+      <GridToolbarExport />
     </GridToolbarContainer>
   );
 }
@@ -141,12 +108,32 @@ export default function (){
   const [rows, setRows] = useState([]);
   const [id, setId] = useState('');
   const [selected, setSelected] = useState([]);
-  let handleEditCellChange = (e) => {
-    console.log(e)
-  };
+  const [columns, setColumns] = useState(rowColumns);
+
   useEffect(() => {
-    request.post('/user/list').then(value => {
-      setRows(value.data)
+    // request.post('/user/list').then(value => {
+    //   console.log(value.data);
+    //   setRows(value.data)
+    // })
+    request.post('/user/list_and_enter_permit').then(value => {
+      const nRows = value.data.map(value1=>{
+        let item = { ...value1 }
+        value1.enterDTOList.forEach(value2 => {item[value2.enterPermit.name] = (value2.examPass&&value2.coursePass)?'通过':'未通过'})
+        return item
+      })
+      setRows(nRows)
+    })
+    request.get('/enter-permit/list').then(value => {
+      const ncolumns = [...columns];
+      value.data.forEach(value1=>{
+        ncolumns.push({
+          field: value1.name,
+          headerName: value1.name,
+          width: 150,
+        },)
+      })
+      console.log(ncolumns);
+      setColumns(ncolumns)
     })
   }, []);
 
@@ -157,6 +144,7 @@ export default function (){
     setGrade('')
     setMajor('')
     setCollegeValue('')
+    setId('');
     setOpen(true)
   }
   const handleCreate = (event) => {
@@ -167,22 +155,21 @@ export default function (){
     console.log(data.get('grade'))
     console.log(collegeValue);
     console.log(userType);
-    let typeN = 0
-    if (userType === '教师') {
-      typeN = 1;
-    }else if (userType === '管理员') {
-      typeN = 2;
-    }
     request.post('/user/save', {
       name: data.get('name'),
       password: data.get('password'),
       grade: data.get('grade'),
       college: collegeValue,
       major: data.get('major'),
-      userType: typeN,
+      userType: userType,
       id: id
     }).then(value => {
-      setRows(value.data)
+      const nRows = value.data.map(value1=>{
+        let item = { ...value1 }
+        value1.enterDTOList.forEach(value2 => {item[value2.enterPermit.name] = (value2.examPass&&value2.coursePass)?'通过':'未通过'})
+        return item
+      })
+      setRows(nRows)
     });
     setCollegeValue('');
     setUserType('')
@@ -256,7 +243,9 @@ export default function (){
               >
                 <MenuItem value={'信息科学与工程学院'}>信息科学与工程学院</MenuItem>
                 <MenuItem value={'材料科学与工程学院'}>材料科学与工程学院</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                <MenuItem value={'环境科学与工程学院'}>环境科学与工程学院</MenuItem>
+                <MenuItem value={'化学与生物工程学院'}>化学与生物工程学院</MenuItem>
+                <MenuItem value={'土木与建筑工程学院'}>土木与建筑工程学院</MenuItem>
               </Select>
             </FormControl>
             <TextField
